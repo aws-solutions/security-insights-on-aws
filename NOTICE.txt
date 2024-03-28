@@ -1,0 +1,75 @@
+Security Insights on AWS
+
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Licensed under the Apache License Version 2.0 (the "License"). You may not use this file except
+in compliance with the License. A copy of the License is located at http://www.apache.org/licenses/
+or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+**********************
+THIRD PARTY COMPONENTS
+**********************
+This software includes third party software subject to the following copyrights:
+
+**********************
+Apache 2.0 License
+**********************
+AWS SDK
+typescript
+constructs
+cdk-nag
+aws-cdk-lib
+aws-cdk
+@aws-sdk/client-glue,
+@aws-sdk/client-securitylake,
+@aws-sdk/client-lakeformation,
+@aws-sdk/client-quicksight,
+@aws-sdk/client-athena,
+@aws-sdk/client-ssm,
+@aws-sdk/client-cloudwatch,
+@aws-cdk/aws-servicecatalogappregistry-alpha,
+@aws-cdk/aws-glue-alpha,
+@aws-solutions-constructs/aws-eventbridge-lambda,
+@aws-solutions-constructs/aws-eventbridge-sns,
+@aws-cdk/assert
+
+
+**********************
+MIT License
+**********************
+aws-sdk-client-mock
+uuid 
+axios
+winston
+ts-jest
+ts-node
+prettier
+cfn-nag 
+eslint
+eslint-config-prettier
+eslint-config-standard-with-typescript
+eslint-plugin-header
+eslint-plugin-import
+eslint-plugin-prettier
+@types/aws-lambda
+husky
+@typescript-eslint/eslint-plugin
+lint-staged
+jest-sonar-reporter
+@types/jest
+@types/node
+@types/sinon
+@types/uuid
+jest
+
+**********************
+ISC
+**********************
+eslint-import-resolver-typescript
+eslint-plugin-promise
+
+**********************
+BSD-3-Clause
+**********************
+sinon

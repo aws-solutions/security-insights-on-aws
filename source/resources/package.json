@@ -1,0 +1,66 @@
+{
+  "name": "security-insights-on-aws",
+  "version": "1.0.0",
+  "description": "Security Insights on AWS(SO0228)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-solutions/security-insights-on-aws"
+  },
+  "scripts": {
+    "cleanup": "tsc --build ./ --clean && rm -rf node_modules && rm -f package-lock.json",
+    "cleanup:tsc": "tsc --build ./ --clean",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest --coverage",
+    "license-report": "license-report --output=csv --delimiter=' under ' --fields=name --fields=licenseType",
+    "cdk": "cdk",
+    "bootstrap": "SOLUTION_VERSION=v1.0.0 SOLUTION_NAME=security-insights-on-aws DIST_OUTPUT_BUCKET=solutions-features SOLUTION_TRADEMARKEDNAME=security-insights-on-aws cdk bootstrap",
+    "deploy": "SOLUTION_VERSION=v1.0.0 SOLUTION_NAME=security-insights-on-aws SOLUTION_TRADEMARKEDNAME=security-insights-on-aws DIST_OUTPUT_BUCKET='solutions-features' cdk deploy --context stackName=SecurityInsightsOnAws --parameters QuickSightUserNameArn=<value> --parameters SecurityLakeAccountId=<value> --parameters EmailID=<value>",
+    "deploy-with-parameters": "SOLUTION_VERSION=v1.0.0 SOLUTION_NAME=security-insights-on-aws SOLUTION_TRADEMARKEDNAME=security-insights-on-aws DIST_OUTPUT_BUCKET='solutions-features' cdk deploy --context stackName=SecurityInsightsOnAws --parameters QuickSightUserNameArn=<value> --parameters SecurityLakeAccountId=<value> --parameters Frequency=<value> --parameters WeeklyRefreshDay=<value> --parameters MonthlyRefreshDay=<value> --parameters EmailID=<value> --parameters LogLevel=<value> --parameters ThresholdValueForAthenaAlarm=<value> --parameters ThresholdUnitForAthenaAlarm=<value>",
+    "synth": "SOLUTION_VERSION=v1.0.0 SOLUTION_NAME=security-insights-on-aws SOLUTION_TRADEMARKEDNAME=security-insights-on-aws DIST_OUTPUT_BUCKET=solutions-reference cdk synth"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "2.68.0",
+    "@types/jest": "^28.1.8",
+    "@types/node": "^18.19.26",
+    "@types/sinon": "^10.0.20",
+    "aws-cdk": "^2.133.0",
+    "jest": "^28.1.3",
+    "sinon": "^14.0.0",
+    "ts-jest": "^28.0.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5",
+    "cdk-nag": "^2.28.72"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-servicecatalogappregistry-alpha": "^2.133.0-alpha.0",
+    "@aws-cdk/aws-glue-alpha": "^2.133.0-alpha.0",
+    "@aws-solutions-constructs/aws-eventbridge-lambda": "~2.54.0",
+    "@aws-solutions-constructs/aws-eventbridge-sns": "~2.54.0",
+    "aws-cdk-lib": "^2.133.0",
+    "constructs": "^10.3.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "roots": [
+      "<rootDir>/test"
+    ],
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ],
+    "collectCoverageFrom": [
+      "**/*.ts*",
+      "!<rootDir>/node_modules/",
+      "!/webui/**",
+      "!/build/"
+    ]
+  }
+}
