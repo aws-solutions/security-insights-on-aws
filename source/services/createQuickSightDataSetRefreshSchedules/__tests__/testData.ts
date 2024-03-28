@@ -1,0 +1,170 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { DayOfWeek, IngestionType, RefreshInterval } from "@aws-sdk/client-quicksight"
+
+export const createEventWithDailySchedule = {
+    "RequestType": "Create",
+    "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "ResponseURL": "testURL",
+    "StackId": "testId",
+    "RequestId": "testId",
+    "LogicalResourceId": "testId",
+    "ResourceType": "Custom::CreateQuickSightDataSetRefreshSchedules",
+    "ResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Daily"
+    }
+}
+
+export const testContext = {
+    "invokedFunctionArn": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "awsRequestId": "testID"
+}
+
+export const dailyInterval: RefreshInterval= 'DAILY'
+export const weeklyInterval: RefreshInterval= 'WEEKLY'
+export const monthlyInterval: RefreshInterval= 'MONTHLY'
+
+export const refreshType: IngestionType = "FULL_REFRESH"
+export const createDailyRefreshScheduleCommandInput = {
+    "AwsAccountId": "111111111111", 
+    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
+    "Schedule": 
+    {
+        "RefreshType": refreshType, 
+        "ScheduleFrequency": {
+            "Interval": dailyInterval
+        },  "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+    }
+}
+export const dayOfWeek: DayOfWeek = "MONDAY"
+export const createWeeklyRefreshScheduleCommandInput = {
+    "AwsAccountId": "111111111111", 
+    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
+    "Schedule": {
+        "RefreshType": refreshType, 
+        "ScheduleFrequency": {
+            "Interval": weeklyInterval,
+            "RefreshOnDay": {
+                "DayOfWeek": dayOfWeek
+            }
+        },  "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+    }
+}
+export const createMonthlyRefreshScheduleCommandInput = {
+    "AwsAccountId": "111111111111", 
+    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
+    "Schedule": 
+    {
+        "RefreshType": refreshType, 
+        "ScheduleFrequency": {
+            "Interval": monthlyInterval,
+            "RefreshOnDay": {
+                "DayOfMonth": "1"
+            }
+        },  "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+    }
+}
+export const createEventWithWeeklySchedule = {
+    "RequestType": "Create",
+    "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "ResponseURL": "testURL",
+    "StackId": "testId",
+    "RequestId": "testId",
+    "LogicalResourceId": "testId",
+    "ResourceType": "Custom::CreateQuickSightDataSetRefreshSchedules",
+    "ResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Weekly"
+    }
+}
+export const createEventWithMonthlySchedule = {
+    "RequestType": "Create",
+    "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "ResponseURL": "testURL",
+    "StackId": "testId",
+    "RequestId": "testId",
+    "LogicalResourceId": "testId",
+    "ResourceType": "Custom::CreateQuickSightDataSetRefreshSchedules",
+    "ResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Monthly"
+    }
+}
+export const updateEventFromWeeklyToDailySchedule = {
+    "RequestType": "Update",
+    "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "ResponseURL": "testURL",
+    "StackId": "testId",
+    "RequestId": "testId",
+    "LogicalResourceId": "testId",
+    "ResourceType": "Custom::CreateQuickSightDataSetRefreshSchedules",
+    "ResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Daily"
+    },
+    "OldResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Weekly"
+    }
+}
+export const deleteEventWithDailySchedule = {
+        "RequestType": "Delete",
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+        "ResponseURL": "testURL",
+        "StackId": "testId",
+        "RequestId": "testId",
+        "LogicalResourceId": "testId",
+        "ResourceType": "Custom::CreateQuickSightDataSetRefreshSchedules",
+        "ResourceProperties": {
+            "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+            "DayOfWeek": "MONDAY",
+            "AccountId": "111111111111",
+            "DayOfMonth": "1",
+            "Region": "us-east-1",
+            "RefreshType": "FULL_REFRESH",
+            "Interval": "Daily"
+        }
+}
+
+export const deleteRefreshScheduleCommandInput = 
+{
+    "AwsAccountId": "111111111111", 
+    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
+    "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+}
+
+export const responseUrl = "testURL"
+export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{}}"
+export const responseConfig  =  {"headers": {"Content-Length": 192, "Content-Type": ""}}
+
+export const reponseBodyFailure = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{}}"
+export const responseConfigFailure  =  {"headers": {"Content-Length": 192, "Content-Type": ""}}
+export const responseConfigFailureForDeletion  =  {"headers": {"Content-Length": 368, "Content-Type": ""}}
+export const responseBodyFailureForDeletion = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"QuickSightDataSetCreator\",\"StackId\":\"arn:aws:cloudformation:us-east-1:111111111111:stack/testversion/\",\"RequestId\":\"11111111-1111-1111-1111-111111111\",\"LogicalResourceId\":\"QuickSightDataSetCreator\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"Error\"}}}"

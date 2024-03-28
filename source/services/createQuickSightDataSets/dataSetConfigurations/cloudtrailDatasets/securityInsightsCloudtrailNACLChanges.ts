@@ -1,0 +1,68 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+export const dataset = {
+    DataSetId: 'Security_Insights_Cloudtrail_NACL_Changes',
+    Name: 'Security_Insights_Cloudtrail_NACL_Changes',
+    PhysicalTableMap: {
+      '60ace416-784e-4798-8766-58bf09b9faaf': {
+        CustomSql: {
+          DataSourceArn: "test",
+          Name: "Security_Insights_Cloudtrail_NACL_Changes",
+          SqlQuery: "SELECT COUNT(*) AS \"Count\",\n\tapi.operation AS \"ActivityType\",\n\tstatus AS \"Status\"\nFROM \"test_database_name\".\"test_datatable_name\"\nWHERE time_dt BETWEEN CURRENT_TIMESTAMP - INTERVAL 'query_window_duration' DAY\n\tAND CURRENT_TIMESTAMP\n\tAND (\n\t\tapi.operation in (\n\t\t\t'CreateNetworkAcl',\n\t\t\t'CreateNetworkAclEntry',\n\t\t\t'DeleteNetworkAcl',\n\t\t\t'DeleteNetworkAclEntry',\n\t\t\t'DescribeNetworkAcls',\n\t\t\t'ReplaceNetworkAclAssociation',\n\t\t\t'ReplaceNetworkAclEntry'\n\t\t)\n\t)\nGROUP BY api.operation,\n\tstatus",
+          Columns: [
+              {
+                  Name: "Count",
+                  Type: "INTEGER"
+              },
+              {
+                  Name: "ActivityType",
+                  Type: "STRING"
+              },
+              {
+                  Name: "Status",
+                  Type: "STRING"
+              }
+          ]
+      },
+    },
+    },
+    LogicalTableMap: {
+      '6bea002a-ef77-4a88-807a-004deed07d70': {
+        Alias: 'Security_Insights_Cloudtrail_NACL_Changes',
+        DataTransforms: [
+          {
+            ProjectOperation: {
+              ProjectedColumns: [
+                "Count",
+                "ActivityType",
+                "Status"
+              ],
+            },
+          },
+        ],
+        Source: {
+          PhysicalTableId: '60ace416-784e-4798-8766-58bf09b9faaf',
+        },
+      },
+    },
+    OutputColumns: [
+      {
+        Name: "Count",
+        Type: "INTEGER"
+      },
+      {
+          Name: "ActivityType",
+          Type: "STRING"
+      },
+      {
+          Name: "Status",
+          Type: "STRING"
+      }
+    ],
+    DataSetUsageConfiguration: {
+      DisableUseAsDirectQuerySource: false,
+      DisableUseAsImportedSource: false,
+    },
+  };
+  
