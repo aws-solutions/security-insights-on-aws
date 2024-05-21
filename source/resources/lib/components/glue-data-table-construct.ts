@@ -4,10 +4,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { S3Table, TableBaseProps } from '@aws-cdk/aws-glue-alpha';
+import { Table, TableProps } from '@aws-cdk/aws-glue-alpha';
 import { aws_lakeformation as lf } from 'aws-cdk-lib';
 
-export interface GlueDataTableProps extends TableBaseProps{
+export interface GlueDataTableProps extends TableProps{
   readonly s3Bucket: Bucket;
   readonly bucketPrefix: string;
   readonly listOfQuickSightPrincipals: { name: string; arn: string }[];
@@ -18,7 +18,7 @@ export class GlueDataTable extends Construct {
 
   constructor(scope: Construct, id: string, props: GlueDataTableProps) {
     super(scope, id);
-    const glueTable = new S3Table(this, 'GlueTable', {
+    const glueTable = new Table(this, 'GlueTable', {
       description: props.description,
       database: props.database,
       tableName: props.tableName,

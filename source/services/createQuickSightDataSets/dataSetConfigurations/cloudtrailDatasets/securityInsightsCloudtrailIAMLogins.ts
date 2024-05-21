@@ -9,10 +9,10 @@ export const dataset = {
         CustomSql: {
           DataSourceArn: "test",
           Name: "Security_Insights_Cloudtrail_IAM_Logins",
-          SqlQuery: "SELECT status AS \"IAM Login Status\",\n\tCOUNT(*) AS \"Count\",\n\tCAST(is_mfa AS varchar) as \"MFAUsed\"\nFROM \"test_database_name\".\"test_datatable_name\"\nWHERE time_dt BETWEEN CURRENT_TIMESTAMP - INTERVAL 'query_window_duration' DAY\n\tAND CURRENT_TIMESTAMP\n\tAND api.operation = 'ConsoleLogin'\n\tAND category_name = 'Identity & Access Management'\nGROUP BY status,\n\tis_mfa",
+          SqlQuery: "SELECT status AS \"ConsoleLoginStatus\",\n\tCOUNT(*) AS \"Count\",\n\tCAST(is_mfa AS varchar) as \"MFAUsed\"\nFROM \"test_database_name\".\"test_datatable_name\"\nWHERE time_dt BETWEEN CURRENT_TIMESTAMP - INTERVAL 'query_window_duration' DAY\n\tAND CURRENT_TIMESTAMP\n\tAND api.operation = 'ConsoleLogin'\n\tAND category_name = 'Identity & Access Management'\nGROUP BY status,\n\tis_mfa",
           Columns: [
               {
-                  Name: "IAM Login Status",
+                  Name: "ConsoleLoginStatus",
                   Type: "STRING"
               },
               {
@@ -34,7 +34,7 @@ export const dataset = {
           {
             ProjectOperation: {
               ProjectedColumns: [
-                "IAM Login Status",
+                "ConsoleLoginStatus",
                 "Count",
                 "MFAUsed"
               ],
@@ -48,7 +48,7 @@ export const dataset = {
     },
     OutputColumns: [
       {
-        Name: "IAM Login Status",
+        Name: "ConsoleLoginStatus",
         Type: "STRING"
       },
       {

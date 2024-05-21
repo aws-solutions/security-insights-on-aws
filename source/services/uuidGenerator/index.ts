@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 as uuidv4 } from 'uuid';
-import { Context, CloudFormationCustomResourceEvent } from 'aws-lambda';
+import { CloudFormationCustomResourceEvent } from 'aws-lambda';
 import { sendCustomResourceResponseToCloudFormation } from './utils/cfnResponse/cfnCustomResource';
-import { CompletionStatus } from './utils/cfnResponse/interfaces';
+import { CfnResponseData } from './utils/cfnResponse/interfaces';
 import { StatusTypes } from './utils/cfnResponse/enum';
+import { logger } from './utils/logger';
 
 export interface IEvent {
   RequestType: string;
@@ -18,10 +19,13 @@ export interface IEvent {
   PhysicalResourceId?: string;
 }
 
-export async function handler(event: CloudFormationCustomResourceEvent, context: Context): Promise<void> {
-  const response: CompletionStatus = {
+export async function handler(event: CloudFormationCustomResourceEvent): Promise<void> {
+  const response: CfnResponseData = {
     Status: StatusTypes.SUCCESS,
-    Data: {}
+    Data: {
+      Code: '',
+      Message: ''
+    }
   };
 
   try {
@@ -30,9 +34,19 @@ export async function handler(event: CloudFormationCustomResourceEvent, context:
     }
   } catch (error) {
     response.Status = StatusTypes.FAILED;
-    response.Data = error;
+    response.Data = {
+      Code: error.code ?? 'CustomResourceError',
+      Message: error.message ?? 'Error occurred when executing CreateLakeFormationPermissions handler',
+    };
+    logger.error({
+      label: 'UUIDGenerator/Handler',
+      message: {
+        data: 'Error occurred while generating uuid',
+        error: error,
+      },
+    });
   } finally {
-    await sendCustomResourceResponseToCloudFormation(event, context, response);
+    await sendCustomResourceResponseToCloudFormation(event, response);
   }
 }
 

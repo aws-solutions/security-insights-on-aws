@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
-import { CompletionStatus } from '../helpers/interfaces';
 import { sendCustomResourceResponseToCloudFormation } from '../../utils/cfnResponse/cfnCustomResource';
 import { StatusTypes } from '../helpers/enum';
 import { logger } from '../../utils/logger';
@@ -11,6 +10,7 @@ import { LakeFormationsPermissionsManager } from '../resourceManagers/lakeFormat
 import { GlueResourcesManager } from '../resourceManagers/glueResourceManager';
 import { DeleteEventHandler } from './deleteEventHandler';
 import { UpdateEventHandler } from './updateEventHandler';
+import { CfnResponseData } from '../../utils/cfnResponse/interfaces';
 
 export class CloudFormationEventHandler {
   constructor(
@@ -31,9 +31,12 @@ export class CloudFormationEventHandler {
         data: 'CloudFormationEventHandler invoked',
       },
     });
-    const response: CompletionStatus = {
+    const response: CfnResponseData = {
       Status: StatusTypes.SUCCESS,
-      Data: {},
+      Error: {
+        Code: "",
+        Message: ""
+      },
     };
 
     try {
@@ -61,13 +64,24 @@ export class CloudFormationEventHandler {
         await new DeleteEventHandler(this.lakeFormationsPermissionsManager).handleEvent();
       }
     } catch (error) {
+      logger.error(error)
+      logger.error({
+        label: 'CreateLakeFormationPermissions/Handler',
+        message: {
+          data: 'Error occurred when executing CreateLakeFormationPermissions handler',
+          event: this.event,
+          context: this.context,
+          result: 'Error',
+          error: error,
+        },
+      });
       response.Status = StatusTypes.FAILED;
-      response.Data.Error = {
+      response.Error = {
         Code: error.code ?? 'CustomResourceError',
         Message: error.message ?? 'Custom resource error occurred when creating QuickSight Datasets.',
       };
     } finally {
-      await sendCustomResourceResponseToCloudFormation(this.event, this.context, response);
+      await sendCustomResourceResponseToCloudFormation(this.event, response);
     }
   };
 }

@@ -16,4 +16,5 @@ process.env.RESOURCE_LINK_DATABASE_NAME = "resourceLinkDatabase"
 process.env.QUICKSIGHT_SERVICE_ROLE = "arn:aws:iam::111111111111:role/serviceRole"
 process.env.QUICKSIGHT_ADMIN_USER = "arn:aws:quicksight:us-east-1:111111111111:user/test"
 process.env.DELAY_IN_SECONDS_FOR_RATE_LIMITING = '0'
+process.env.CREATE_USER_GROUPS = 'Yes'
 

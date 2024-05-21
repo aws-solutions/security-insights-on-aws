@@ -4,8 +4,7 @@
 import { Context, CloudFormationCustomResourceEvent, EventBridgeEvent } from 'aws-lambda';
 import { logger } from './utils/logger';
 import { AxiosResponse } from 'axios';
-import { CompletionStatus, EventDetail } from './lib/helpers/interfaces';
-import { StatusTypes } from './lib/helpers/enum';
+import { EventDetail } from './lib/helpers/interfaces';
 import { GlueOperations } from './lib/serviceOperations/glueOperations';
 import { LakeFormationOperations } from './lib/serviceOperations/lakeFormationOperations';
 import { REGION, USER_AGENT_STRING } from './lib/helpers/constants';
@@ -28,11 +27,7 @@ export async function handler(
       context: context,
     },
   });
-  const response: CompletionStatus = {
-    Status: StatusTypes.SUCCESS,
-    Data: {},
-  };
-
+  
   let { lakeFormationsPermissionsManager, glueResourcesManager } = getResourceManagerObjects();
 
   try {
@@ -59,11 +54,7 @@ export async function handler(
         error: error,
       },
     });
-    response.Status = StatusTypes.FAILED;
-    response.Data.Error = {
-      Code: error.code ?? 'CustomResourceError',
-      Message: error.message ?? 'Error occurred when executing CreateLakeFormationPermissions handler',
-    };
+    throw error
   }
 }
 

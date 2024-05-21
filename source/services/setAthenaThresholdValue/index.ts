@@ -5,7 +5,7 @@ import { Context, CloudFormationCustomResourceEvent } from 'aws-lambda';
 import { logger } from './utils/logger';
 import { sendCustomResourceResponseToCloudFormation } from './utils/cfnResponse/cfnCustomResource';
 import { AxiosResponse } from 'axios';
-import { CompletionStatus } from './lib/helpers/interfaces';
+import { CfnResponseData } from './utils/cfnResponse/interfaces';
 import { StatusTypes } from './lib/helpers/enum';
 
 export async function handler(
@@ -20,11 +20,15 @@ export async function handler(
       context: context,
     },
   });
-  const response: CompletionStatus = {
+  const response: CfnResponseData = {
     Status: StatusTypes.SUCCESS,
     Data: {
       ThresholdValueInBytes: '',
     },
+    Error: {
+      Code: '',
+      Message: ''
+    }
   };
 
   try {
@@ -48,13 +52,19 @@ export async function handler(
       },
     });
     response.Status = StatusTypes.FAILED;
-    response.Data.Error = {
+    response.Error = {
       Code: error.code ?? 'CustomResourceError',
       Message: error.message ?? 'Error occurred when executing setThresholdValue for Athena',
     };
-    throw error
+    logger.error({
+      label: 'SetAthenaThresholdValue/Handler',
+      message: {
+        data: 'Error occurred while creating threshold value',
+        error: error,
+      },
+    });
   } finally {
-    await sendCustomResourceResponseToCloudFormation(event, context, response);
+    await sendCustomResourceResponseToCloudFormation(event, response);
   }
 }
 

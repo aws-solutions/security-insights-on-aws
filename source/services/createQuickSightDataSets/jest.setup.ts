@@ -17,4 +17,7 @@ process.env.RESOURCE_LINK_DATABASE_NAME = "resourceLinkDatabase"
 process.env.QUICKSIGHT_SERVICE_ROLE = "arn:aws:iam::111111111111:role/serviceRole"
 process.env.QUICKSIGHT_ADMIN_USER = "arn:aws:quicksight:us-east-1:111111111111:user/test"
 process.env.DELAY_IN_SECONDS_FOR_RATE_LIMITING = '0'
-
+process.env.SECURITY_HUB_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-east-1/securityHub'
+process.env.CLOUDTRAIL_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-east-1/cloudtrail'
+process.env.VPC_FLOW_LOGS_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-east-1/vpcFlowLogs'
+process.env.APP_FABRIC_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-east-1/appfabric'

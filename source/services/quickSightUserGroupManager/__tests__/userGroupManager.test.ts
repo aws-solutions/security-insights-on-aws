@@ -3,7 +3,7 @@
 
 import 'jest';
 import { handler } from '../index';
-import { Context, CloudFormationCustomResourceEvent } from 'aws-lambda';
+import { CloudFormationCustomResourceEvent } from 'aws-lambda';
 import { mockClient } from 'aws-sdk-client-mock';
 import axios from 'axios';
 import 'aws-sdk-client-mock-jest';
@@ -23,12 +23,14 @@ import {
   deleteEventCloudFormation,
   readUserGroupInput,
   readUserGroupInputForDeletion,
+  responseBodyForFailure,
   responseBodySuccess, 
   responseBodySuccessForDeletion, 
   responseConfig, 
   responseConfigForDeletion, 
+  responseConfigForFailure, 
   responseUrl, 
-  testContext
+
   } from './testData';
 jest.mock('axios');
 
@@ -55,7 +57,7 @@ describe('it should create QuickSight user groups during for CloudFormation crea
 
     it('it should create QuickSight user groups', async function () {
 
-      await handler(createEventCloudFormation as CloudFormationCustomResourceEvent, testContext as Context);
+      await handler(createEventCloudFormation as CloudFormationCustomResourceEvent);
       
       expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateGroupCommand, 2);
       expect(mockQuickSightClient).toHaveReceivedCommandWith(CreateGroupCommand, adminUserGroupInput);
@@ -90,13 +92,46 @@ describe('it should delete QuickSight user groups during for CloudFormation dele
 
   it('it should delete QuickSight user groups', async function () {
 
-    await handler(deleteEventCloudFormation as CloudFormationCustomResourceEvent, testContext as Context);
+    await handler(deleteEventCloudFormation as CloudFormationCustomResourceEvent);
     
     expect(mockQuickSightClient).toHaveReceivedCommandTimes(DeleteGroupCommand, 2);
     expect(axios.put).toHaveBeenCalledTimes(1);
     expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccessForDeletion, responseConfigForDeletion);
     expect(mockQuickSightClient).toHaveReceivedCommandWith(DeleteGroupCommand, readUserGroupInputForDeletion);
     expect(mockQuickSightClient).toHaveReceivedCommandWith(DeleteGroupCommand, adminUserGroupInputForDeletion);
+
+  });
+
+});
+
+describe('it should return error if QuickSight user group creation fails', () => {
+  let mockedAxios = axios as jest.Mocked<typeof axios>;
+  let mockQuickSightClient: any;
+
+  beforeEach(() => {   
+      jest.resetAllMocks();     
+      mockedAxios.put.mockResolvedValue({});
+      mockQuickSightClient = mockClient(QuickSightClient);
+      mockQuickSightClient.on(CreateGroupCommand).rejects('UserGroupCreationError')
+
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    
+  });
+
+  afterAll(() => {
+      jest.resetAllMocks();
+  });
+
+  it('it should delete QuickSight user groups', async function () {
+
+    await handler(createEventCloudFormation as CloudFormationCustomResourceEvent);
+    
+    expect(axios.put).toHaveBeenCalledTimes(1);
+    expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodyForFailure, responseConfigForFailure);
 
   });
 

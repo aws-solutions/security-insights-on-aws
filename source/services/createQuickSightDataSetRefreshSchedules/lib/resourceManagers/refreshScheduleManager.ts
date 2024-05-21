@@ -36,20 +36,9 @@ export class RefreshScheduleManager {
           dataSetIdValue: dataSetId,
         },
       });
-      try {
-        let schedule = this.getSchedule(dataSetId, scheduleFrequency, refreshType);
-        await this.refreshScheduleOperations.createRefreshSchedule(dataSetId, awsAccountId, schedule);
-        await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
-      } catch (error) {
-        logger.error({
-          label: 'CreateQuickSightDataSetRefreshSchedules/Handler',
-          message: {
-            data: 'Error when creating schedule refresh settings',
-            value: dataSetId,
-            error: error,
-          },
-        });
-      }
+      let schedule = this.getSchedule(dataSetId, scheduleFrequency, refreshType);
+      await this.refreshScheduleOperations.createRefreshSchedule(dataSetId, awsAccountId, schedule);
+      await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
     }
   };
 

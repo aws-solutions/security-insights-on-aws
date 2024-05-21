@@ -94,7 +94,9 @@ export const DATA_SET_ARNS = [
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Root_Logins`,
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Route_Table_Changes`,
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Security_Group_Changes`,
-  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures`
+  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures`,
+  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Security_Hub_Findings_Summary_Standards`
+
 ];
 
 export const INGESTION_ARNS = [
@@ -126,7 +128,9 @@ export const INGESTION_ARNS = [
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Root_Logins/ingestion/*`,
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Route_Table_Changes/ingestion/*`,
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Security_Group_Changes/ingestion/*`,
-  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures/ingestion/*`
+  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures/ingestion/*`,
+  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Security_Hub_Findings_Summary_Standards/ingestion/*`
+
 ];
 
 export const REFRESH_SCHEDULE_ARNS = [
@@ -158,7 +162,10 @@ export const REFRESH_SCHEDULE_ARNS = [
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Root_Logins/refresh-schedule/Security_Insights_Cloudtrail_Root_Logins`,
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Route_Table_Changes/refresh-schedule/Security_Insights_Cloudtrail_Route_Table_Changes`,
   `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_Security_Group_Changes/refresh-schedule/Security_Insights_Cloudtrail_Security_Group_Changes`,
-  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures/refresh-schedule/Security_Insights_Cloudtrail_UID_API_Failures`
+  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures/refresh-schedule/Security_Insights_Cloudtrail_UID_API_Failures`,
+  `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Security_Hub_Findings_Summary_Standards/refresh-schedule/Security_Insights_Security_Hub_Findings_Summary_Standards`
+
+
 ];
 
 export const QUICKSIGHT_ANALYSIS_ACTIONS = [

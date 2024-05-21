@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
+import { CloudFormationCustomResourceUpdateEvent, Context } from 'aws-lambda';
 import { RefreshScheduleManager } from '../resourceManagers/refreshScheduleManager';
 import { logger } from '../../utils/logger';
 
 export class UpdateEventHandler {
   constructor(
-    private event: CloudFormationCustomResourceEvent,
+    private event: CloudFormationCustomResourceUpdateEvent,
     private context: Context,
     private refreshScheduleManager: RefreshScheduleManager,
   ) {
@@ -23,6 +23,16 @@ export class UpdateEventHandler {
         data: 'UpdateEventHandler invoked',
       },
     });
-    await this.refreshScheduleManager.updateDataSetRefreshSchedules(this.event, this.context);
+
+    // Check if the solution is upgraded from previous version or only cfn input has changed
+    if(this.checkIfSolutionVersionUpgraded(this.event)) {
+      await this.refreshScheduleManager.createDataSetRefreshSchedules(this.event, this.context);
+    } else {
+      await this.refreshScheduleManager.updateDataSetRefreshSchedules(this.event, this.context);
+    }
   };
+
+  private checkIfSolutionVersionUpgraded = (event: CloudFormationCustomResourceUpdateEvent) => {
+    return (event.ResourceProperties.Version !== event.OldResourceProperties.Version)
+  }
 }

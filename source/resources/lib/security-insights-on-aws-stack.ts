@@ -12,11 +12,11 @@ import { GlueDatabase } from './components/glue-database-construct';
 import { GlueDataTable } from './components/glue-data-table-construct';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { EventbridgeToLambda } from '@aws-solutions-constructs/aws-eventbridge-lambda';
-import { Code, Function, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function as AwsLambdaFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { Effect, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as placeholderDataTables from './components/placeholderDataTables/index';
-import { addCfnNagSuppression } from './cdk-helper/cdk-helper';
+import { addCfnNagSuppression, setCondition } from './cdk-helper/cdk-helper';
 import * as permissions from './permissions';
 import {
   CREATE_LOG_GROUP_PERMISSIONS,
@@ -140,6 +140,12 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
       default: 'GB',
       allowedValues: ['GB', 'TB', 'PB', 'EB'],
     });
+    const createQuickSightUserGroups = new CfnParameter(this, 'CreateQuickSightUserGroups', {
+      type: 'String',
+      description: 'Select Yes to create QuickSight User groups. If you use Identity Center to manage QuickSight User Groups, select No',
+      default: 'Yes',
+      allowedValues: ['No', 'Yes'],
+    });
     this.templateOptions.metadata = {
       'AWS::CloudFormation::Interface': {
         ParameterGroups: [
@@ -149,7 +155,7 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
           },
           {
             Label: { default: 'QuickSight Settings' },
-            Parameters: [quickSightUserNameArn.logicalId],
+            Parameters: [quickSightUserNameArn.logicalId, createQuickSightUserGroups.logicalId],
           },
           {
             Label: { default: 'QuickSight Dataset Refresh Settings' },
@@ -196,6 +202,9 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
           [thresholdUnitForAthenaAlarm.logicalId]: {
             default: 'Unit for threshold value for Athena Alarm',
           },
+          [createQuickSightUserGroups.logicalId]: {
+            default: 'Create QuickSight User Groups'
+          }
         },
       },
     };
@@ -327,7 +336,15 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
     });
     const EVALUATION_PERIOD_FOR_ATHENA_ALARM = 1;
     const DATA_POINTS_FOR_ATHENA_ALARM = 1;
-    const DELAY_IN_SECONDS_FOR_RATE_LIMITING = '3';
+    const DELAY_IN_SECONDS_FOR_RATE_LIMITING = '1';
+
+    /**
+     * Condition for QuickSight User Groups
+     */
+
+    const createQuickSightUserGroupsCondition = new cdk.CfnCondition(this, 'CreateQuickSightUserGroupsCondition', {
+      expression: cdk.Fn.conditionEquals(createQuickSightUserGroups.valueAsString, 'Yes'),
+    });
 
     /**
      * App Registry Resources
@@ -416,6 +433,142 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
     const deploymentSourceBucket = Bucket.fromBucketAttributes(this, 'SolutionRegionalBucket', {
       bucketName: props.solutionBucketName + '-' + cdk.Aws.REGION,
     });
+
+        /**
+     * Lambda backed custom resource to create LakeFormation Permissions
+     */
+        const createLakeFormationPermissionsRole = new Role(this, 'SetupLakeFormationPermissionsRole', {
+          assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+        });
+        const createLakeFormationPermissionsRolePolicy = new Policy(this, 'SetupLakeFormationPermissionsPolicy', {
+          statements: [
+            new PolicyStatement({
+              sid: 'CreateLakeFormationPermissions',
+              actions: permissions.CREATE_LAKE_FORMATION_PERMISSIONS,
+              effect: Effect.ALLOW,
+              resources: ['*'],
+            }),
+            new PolicyStatement({
+              sid: 'GlueResourcesPermissions',
+              actions: GLUE_PERMISSIONS,
+              effect: Effect.ALLOW,
+              resources: [
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:catalog`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:database/${SECURITY_LAKE_DATABASE_NAME}`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:database/${mappings.findInMap(
+                  'SecurityLakeConfiguration',
+                  'ResourceLinkDatabase',
+                )}`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:database/${SECURITY_LAKE_DATABASE_NAME}`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:table/${mappings.findInMap(
+                  'SecurityLakeConfiguration',
+                  'ResourceLinkDatabase',
+                )}/*`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:table/${SECURITY_LAKE_DATABASE_NAME}/*`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${
+                  cdk.Aws.ACCOUNT_ID
+                }:userDefinedFunction/${mappings.findInMap('SecurityLakeConfiguration', 'ResourceLinkDatabase')}/*`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:userDefinedFunction/${SECURITY_LAKE_DATABASE_NAME}/*`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:catalog`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:database/${SECURITY_LAKE_DATABASE_NAME}`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:table/${SECURITY_LAKE_DATABASE_NAME}/*`,
+                `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:userDefinedFunction/${SECURITY_LAKE_DATABASE_NAME}/*`
+              ],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: CREATE_LOG_GROUP_PERMISSIONS,
+              resources: [LAMBDA_LOG_GROUP_ARN],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: XRAY_ACTIONS,
+              resources: ['*'],
+            }),
+          ],
+        });
+        createLakeFormationPermissionsRolePolicy.attachToRole(createLakeFormationPermissionsRole);
+    
+        NagSuppressions.addResourceSuppressions(createLakeFormationPermissionsRolePolicy, [
+          {
+            id: 'AwsSolutions-IAM5',
+            reason:
+              'All policies have been scoped to be as restrictive as possible. The create actions only support * as resource',
+          },
+        ]);
+    
+        /**
+         * Lambda function to setup LakeFormationPermissions
+         */
+    
+        const createLakeFormationPermissions: AwsLambdaFunction = new AwsLambdaFunction(this, 'CreateLakeFormationPermissions', {
+          description: 'Lambda function to create LakeFormation Permissions',
+          runtime: LAMBDA_RUNTIME,
+          code: Code.fromBucket(
+            deploymentSourceBucket,
+            `${props.solutionName}/${props.solutionVersion}/createLakeFormationPermissions.zip`,
+          ),
+          handler: 'index.handler',
+          timeout: cdk.Duration.seconds(LAMBDA_TIMEOUT_DURATION),
+          memorySize: LAMBDA_MEMORY_SIZE,
+          role: createLakeFormationPermissionsRole.withoutPolicyUpdates(),
+          tracing: Tracing.ACTIVE,
+          environment: {
+            LOG_LEVEL: mappings.findInMap('InputConfiguration', logLevel.valueAsString),
+            REGION: cdk.Aws.REGION,
+            SECURITY_LAKE_ACCOUNT_ID: securityLakeAccountId.valueAsString,
+            CURRENT_ACCOUNT_ID: cdk.Aws.ACCOUNT_ID,
+            SECURITY_LAKE_VPC_TABLE_NAME: SECURITY_LAKE_VPC_TABLE_NAME,
+            SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME: SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME,
+            SECURITY_LAKE_SECURITY_HUB_TABLE_NAME: SECURITY_LAKE_SECURITY_HUB_TABLE_NAME,
+            SECURITY_LAKE_DATABASE_NAME: SECURITY_LAKE_DATABASE_NAME,
+            SECURITY_LAKE_APP_FABRIC_TABLE_NAME: SECURITY_LAKE_APP_FABRIC_TABLE_NAME,
+            RESOURCE_LINK_DATABASE_NAME: glueResourceLinkDatabase.glueDB.databaseName,
+            QUICKSIGHT_SERVICE_ROLE: QUICKSIGHT_SERVICE_LINKED_ROLE,
+            QUICKSIGHT_ADMIN_USER: QUICKSIGHT_PRINCIPAL_ARN,
+            ROLLUP_REGION: ROLLUP_REGION_FOR_SECURITY_LAKE,
+            DEFAULT_DATABASE_NAME: glueDatabase.glueDB.databaseName,
+            DEFAULT_VPC_DATATABLE_NAME: DEFAULT_VPC_TABLE_NAME,
+            DEFAULT_SECURITY_HUB_DATATABLE_NAME: DEFAULT_SECURITY_HUB_TABLE_NAME,
+            DEFAULT_CLOUDTRAIL_DATATABLE_NAME: DEFAULT_CLOUDTRAIL_TABLE_NAME,
+            LAMBDA_EXECUTION_ROLE_ARN: createLakeFormationPermissionsRole.roleArn,
+            USER_AGENT_STRING: USER_AGENT_STRING,
+            DELAY_IN_SECONDS_FOR_RATE_LIMITING: DELAY_IN_SECONDS_FOR_RATE_LIMITING,
+            QUICKSIGHT_ADMIN_USER_GROUP_ARN: `arn:${cdk.Aws.PARTITION}:quicksight:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:group/default/${QUICKSIGHT_ADMIN_USER_GROUP_NAME}`,
+            QUICKSIGHT_READ_USER_GROUP_ARN: `arn:${cdk.Aws.PARTITION}:quicksight:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:group/default/${QUICKSIGHT_READ_USER_GROUP_NAME}`,
+            CREATE_USER_GROUPS: createQuickSightUserGroups.valueAsString
+          },
+        });
+    
+        const createLakeFormationPermissionsLogGroup = new LogGroup(this, 'CreateLakeFormationPermissionsLogGroup', {
+          logGroupName: `/aws/lambda/${createLakeFormationPermissions.functionName}`,
+          retention: LAMBDA_LOG_GROUP_RETENTION_PERIOD,
+          removalPolicy: RemovalPolicy.RETAIN,
+        });
+    
+        addCfnNagSuppression(createLakeFormationPermissionsLogGroup, {
+          id: 'W84',
+          reason: 'CloudWatch log group is always encrypted by default.',
+        });
+    
+        const createLakeFormationPermissionsCustomResource = new CustomResource(
+          this,
+          'CreateLakeFormationPermissionsCustomResource',
+          {
+            resourceType: 'Custom::CreateLakeFormationPermissions',
+            serviceToken: createLakeFormationPermissions.functionArn,
+            properties: {
+              SecurityLakeAccount: securityLakeAccountId.valueAsString,
+              AccountId: this.account,
+              Region: this.region,
+              QuickSightAdminArn: quickSightUserNameArn.valueAsString,
+              CreateQuickSightUserGrous: createQuickSightUserGroups.valueAsString
+            },
+          },
+        );
+        createLakeFormationPermissionsCustomResource.node.addDependency(createLakeFormationPermissionsLogGroup);
+        createLakeFormationPermissionsCustomResource.node.addDependency(createLakeFormationPermissionsRolePolicy);
+    
 
     /**
      * Lambda backed custom resource to create QuickSight datasets
@@ -514,7 +667,7 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
           'All policies have been scoped to be as restrictive as possible. The create actions only support * as resource',
       },
     ]);
-    const createQuickSightDataSets: Function = new Function(this, 'CreateQuickDataSets', {// NOSONAR: Code for Lambda
+    const createQuickSightDataSets: AwsLambdaFunction = new AwsLambdaFunction(this, 'CreateQuickDataSets', {
       description: 'Lambda function to create data and update data sets for QuickSight',
       runtime: LAMBDA_RUNTIME,
       code: Code.fromBucket(
@@ -550,6 +703,10 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
         RESOURCE_LINK_DATABASE_NAME: RESOURCE_LINK_DATABASE_NAME,
         SECURITY_LAKE_ACCOUNT_ID: securityLakeAccountId.valueAsString,
         DELAY_IN_SECONDS_FOR_RATE_LIMITING: DELAY_IN_SECONDS_FOR_RATE_LIMITING,
+        SECURITY_HUB_SSM_PARAMETER_NAME: `/solutions/securityInsights/${ROLLUP_REGION_FOR_SECURITY_LAKE}/securityHub`,
+        CLOUDTRAIL_SSM_PARAMETER_NAME: `/solutions/securityInsights/${ROLLUP_REGION_FOR_SECURITY_LAKE}/cloudtrail`,
+        VPC_FLOW_LOGS_SSM_PARAMETER_NAME: `/solutions/securityInsights/${ROLLUP_REGION_FOR_SECURITY_LAKE}/vpcFlowLogs`,
+        APP_FABRIC_SSM_PARAMETER_NAME: `/solutions/securityInsights/${ROLLUP_REGION_FOR_SECURITY_LAKE}/appfabric`
       },
     });
 
@@ -570,12 +727,15 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
       properties: {
         AccountId: this.account,
         Region: this.region,
+        Version: mappings.findInMap('SolutionConfiguration', 'Version')
       },
     });
     quickSightDataSetCreateCustomResource.node.addDependency(createQuickSightDataSetLogGroup);
     quickSightDataSetCreateCustomResource.node.addDependency(createQuickSightDataSetsRoleCreatePolicy);
     quickSightDataSetCreateCustomResource.node.addDependency(createQuickSightDataSetsRoleUpdatePolicy);
     quickSightDataSetCreateCustomResource.node.addDependency(athenaWorkGroup.athenaWorkGroup);
+    quickSightDataSetCreateCustomResource.node.addDependency(createLakeFormationPermissionsCustomResource);
+
 
     /**
      *  EventBridge Resources
@@ -592,141 +752,6 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
       },
     });
 
-    
-
-    /**
-     * Lambda backed custom resource to create LakeFormation Permissions
-     */
-    const createLakeFormationPermissionsRole = new Role(this, 'SetupLakeFormationPermissionsRole', {
-      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const createLakeFormationPermissionsRolePolicy = new Policy(this, 'SetupLakeFormationPermissionsPolicy', {
-      statements: [
-        new PolicyStatement({
-          sid: 'CreateLakeFormationPermissions',
-          actions: permissions.CREATE_LAKE_FORMATION_PERMISSIONS,
-          effect: Effect.ALLOW,
-          resources: ['*'],
-        }),
-        new PolicyStatement({
-          sid: 'GlueResourcesPermissions',
-          actions: GLUE_PERMISSIONS,
-          effect: Effect.ALLOW,
-          resources: [
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:catalog`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:database/${SECURITY_LAKE_DATABASE_NAME}`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:database/${mappings.findInMap(
-              'SecurityLakeConfiguration',
-              'ResourceLinkDatabase',
-            )}`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:database/${SECURITY_LAKE_DATABASE_NAME}`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:table/${mappings.findInMap(
-              'SecurityLakeConfiguration',
-              'ResourceLinkDatabase',
-            )}/*`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:table/${SECURITY_LAKE_DATABASE_NAME}/*`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${
-              cdk.Aws.ACCOUNT_ID
-            }:userDefinedFunction/${mappings.findInMap('SecurityLakeConfiguration', 'ResourceLinkDatabase')}/*`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:userDefinedFunction/${SECURITY_LAKE_DATABASE_NAME}/*`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:catalog`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:database/${SECURITY_LAKE_DATABASE_NAME}`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:table/${SECURITY_LAKE_DATABASE_NAME}/*`,
-            `arn:${cdk.Aws.PARTITION}:glue:${cdk.Aws.REGION}:${securityLakeAccountId.valueAsString}:userDefinedFunction/${SECURITY_LAKE_DATABASE_NAME}/*`
-          ],
-        }),
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: CREATE_LOG_GROUP_PERMISSIONS,
-          resources: [LAMBDA_LOG_GROUP_ARN],
-        }),
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: XRAY_ACTIONS,
-          resources: ['*'],
-        }),
-      ],
-    });
-    createLakeFormationPermissionsRolePolicy.attachToRole(createLakeFormationPermissionsRole);
-
-    NagSuppressions.addResourceSuppressions(createLakeFormationPermissionsRolePolicy, [
-      {
-        id: 'AwsSolutions-IAM5',
-        reason:
-          'All policies have been scoped to be as restrictive as possible. The create actions only support * as resource',
-      },
-    ]);
-
-    /**
-     * Lambda function to setup LakeFormationPermissions
-     */
-
-    const createLakeFormationPermissions: Function = new Function(this, 'CreateLakeFormationPermissions', { // NOSONAR
-      description: 'Lambda function to create LakeFormation Permissions',
-      runtime: LAMBDA_RUNTIME,
-      code: Code.fromBucket(
-        deploymentSourceBucket,
-        `${props.solutionName}/${props.solutionVersion}/createLakeFormationPermissions.zip`,
-      ),
-      handler: 'index.handler',
-      timeout: cdk.Duration.seconds(LAMBDA_TIMEOUT_DURATION),
-      memorySize: LAMBDA_MEMORY_SIZE,
-      role: createLakeFormationPermissionsRole.withoutPolicyUpdates(),
-      tracing: Tracing.ACTIVE,
-      environment: {
-        LOG_LEVEL: mappings.findInMap('InputConfiguration', logLevel.valueAsString),
-        REGION: cdk.Aws.REGION,
-        SECURITY_LAKE_ACCOUNT_ID: securityLakeAccountId.valueAsString,
-        CURRENT_ACCOUNT_ID: cdk.Aws.ACCOUNT_ID,
-        SECURITY_LAKE_VPC_TABLE_NAME: SECURITY_LAKE_VPC_TABLE_NAME,
-        SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME: SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME,
-        SECURITY_LAKE_SECURITY_HUB_TABLE_NAME: SECURITY_LAKE_SECURITY_HUB_TABLE_NAME,
-        SECURITY_LAKE_DATABASE_NAME: SECURITY_LAKE_DATABASE_NAME,
-        SECURITY_LAKE_APP_FABRIC_TABLE_NAME: SECURITY_LAKE_APP_FABRIC_TABLE_NAME,
-        RESOURCE_LINK_DATABASE_NAME: glueResourceLinkDatabase.glueDB.databaseName,
-        QUICKSIGHT_SERVICE_ROLE: QUICKSIGHT_SERVICE_LINKED_ROLE,
-        QUICKSIGHT_ADMIN_USER: QUICKSIGHT_PRINCIPAL_ARN,
-        ROLLUP_REGION: ROLLUP_REGION_FOR_SECURITY_LAKE,
-        DEFAULT_DATABASE_NAME: glueDatabase.glueDB.databaseName,
-        DEFAULT_VPC_DATATABLE_NAME: DEFAULT_VPC_TABLE_NAME,
-        DEFAULT_SECURITY_HUB_DATATABLE_NAME: DEFAULT_SECURITY_HUB_TABLE_NAME,
-        DEFAULT_CLOUDTRAIL_DATATABLE_NAME: DEFAULT_CLOUDTRAIL_TABLE_NAME,
-        LAMBDA_EXECUTION_ROLE_ARN: createLakeFormationPermissionsRole.roleArn,
-        USER_AGENT_STRING: USER_AGENT_STRING,
-        DELAY_IN_SECONDS_FOR_RATE_LIMITING: DELAY_IN_SECONDS_FOR_RATE_LIMITING,
-        QUICKSIGHT_ADMIN_USER_GROUP_ARN: `arn:${cdk.Aws.PARTITION}:quicksight:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:group/default/${QUICKSIGHT_ADMIN_USER_GROUP_NAME}`,
-        QUICKSIGHT_READ_USER_GROUP_ARN: `arn:${cdk.Aws.PARTITION}:quicksight:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:group/default/${QUICKSIGHT_READ_USER_GROUP_NAME}`,
-      },
-    });
-
-    const createLakeFormationPermissionsLogGroup = new LogGroup(this, 'CreateLakeFormationPermissionsLogGroup', {
-      logGroupName: `/aws/lambda/${createLakeFormationPermissions.functionName}`,
-      retention: LAMBDA_LOG_GROUP_RETENTION_PERIOD,
-      removalPolicy: RemovalPolicy.RETAIN,
-    });
-
-    addCfnNagSuppression(createLakeFormationPermissionsLogGroup, {
-      id: 'W84',
-      reason: 'CloudWatch log group is always encrypted by default.',
-    });
-
-    const createLakeFormationPermissionsCustomResource = new CustomResource(
-      this,
-      'CreateLakeFormationPermissionsCustomResource',
-      {
-        resourceType: 'Custom::CreateLakeFormationPermissions',
-        serviceToken: createLakeFormationPermissions.functionArn,
-        properties: {
-          SecurityLakeAccount: securityLakeAccountId.valueAsString,
-          AccountId: this.account,
-          Region: this.region,
-          QuickSightAdminArn: quickSightUserNameArn.valueAsString
-        },
-      },
-    );
-    createLakeFormationPermissionsCustomResource.node.addDependency(createLakeFormationPermissionsLogGroup);
-    createLakeFormationPermissionsCustomResource.node.addDependency(createLakeFormationPermissionsRolePolicy);
-    
     const ssmParameterForUpdatePermissions = new StringParameter(this, 'ssmParameterForUpdatePermissions', {
       description: 'SSM parameter to update security lake permissions in the Security Lake',
       parameterName: `/solutions/securityInsights/${ROLLUP_REGION_FOR_SECURITY_LAKE}/updatePermissions`,
@@ -879,6 +904,10 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
               dataSetPlaceholder: 'Security_Insights_Cloudtrail_UID_API_Failures',
               dataSetArn: `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures`,
             },
+            {
+              dataSetPlaceholder: 'Security_Insights_Security_Hub_Findings_Summary_Standards',
+              dataSetArn: `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Security_Hub_Findings_Summary_Standards`,
+            }
           ],
         },
       },
@@ -1060,6 +1089,10 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
               dataSetPlaceholder: 'Security_Insights_Cloudtrail_UID_API_Failures',
               dataSetArn: `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Cloudtrail_UID_API_Failures`,
             },
+            {
+              dataSetPlaceholder: 'Security_Insights_Security_Hub_Findings_Summary_Standards',
+              dataSetArn: `arn:${Aws.PARTITION}:quicksight:${Aws.REGION}:${Aws.ACCOUNT_ID}:dataset/Security_Insights_Security_Hub_Findings_Summary_Standards`,
+            }
           ],
         },
       },
@@ -1111,7 +1144,7 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
       },
     ]);
 
-    const createQuickSightDataSetRefreshSchedules: Function = new Function( // NOSONAR - The code is for Lambda function execution and not dynamically injected
+    const createQuickSightDataSetRefreshSchedules: AwsLambdaFunction = new AwsLambdaFunction(
       this,
       'CreateQuickSightDataSetRefreshSchedules',
       {
@@ -1177,6 +1210,7 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
           DayOfWeek: mappings.findInMap('InputConfiguration', weeklyRefreshDay.valueAsString),
           DayOfMonth: monthlyRefreshDay.valueAsString,
           RefreshType: mappings.findInMap('QuickSightConfiguration', 'RefreshType'),
+          Version: mappings.findInMap('SolutionConfiguration', 'Version')
         },
       },
     );
@@ -1188,6 +1222,13 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
     createQuickSightDataSetRefreshSchedulesCustomResource.node.addDependency(
       createQuickSightDataSetRefreshSchedulesRolePolicy,
     );
+    createQuickSightDataSetRefreshSchedulesCustomResource.node.addDependency(
+      quickSightDataSetCreateCustomResource
+    );
+    createQuickSightDataSetRefreshSchedulesCustomResource.node.addDependency(
+      createLakeFormationPermissionsCustomResource
+    );
+
 
     /**
      * Lambda for creating user groups
@@ -1245,7 +1286,7 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
       },
     ]);
 
-    const quickSightUserGroupManager: Function = new Function(this, 'QuickSightUserGroupManager', { // NOSONAR
+    const quickSightUserGroupManager: AwsLambdaFunction = new AwsLambdaFunction(this, 'QuickSightUserGroupManager', {
       description:
         'Creates default user groups and assigns permissions to view the Security Insights Dashboard and Analyses',
       runtime: LAMBDA_RUNTIME,
@@ -1292,6 +1333,20 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
     quickSightUserGroupsCustomResource.node.addDependency(quickSightUserGroupManagerLogGroup);
     quickSightUserGroupsCustomResource.node.addDependency(quickSightUserGroupManagerRolePolicy);
 
+    // Add conditions for resources related to QuickSight user Groups
+
+    const quickSightUserGroupResources = [
+      quickSightUserGroupManager,
+      quickSightUserGroupManagerLogGroup,
+      quickSightUserGroupsCustomResource,
+      quickSightUserGroupManagerRolePolicy,
+      quickSightUserGroupManagerRole
+    ]
+
+    for (const resource of quickSightUserGroupResources) {
+      setCondition(resource, createQuickSightUserGroupsCondition)
+    }
+    
     /**
      * UUID generator
      */
@@ -1380,7 +1435,7 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
       },
     ]);
 
-    const sendAthenaMetrics: Function = new Function(this, 'SendAthenaMetrics', { // NOSONAR: Code for lambda function
+    const sendAthenaMetrics: AwsLambdaFunction = new AwsLambdaFunction(this, 'SendAthenaMetrics', {
       description: 'Lambda function to send athena metrics',
       runtime: LAMBDA_RUNTIME,
       timeout: cdk.Duration.seconds(SEND_METRICS_LAMBDA_TIMEOUT_DURATION),
@@ -1457,39 +1512,50 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
     athenaMetricsEventRule.addTarget(new LambdaFunction(sendAthenaMetrics));
 
     /**
-     *
+     * Lambda function to convert input threshold value to bytes
      */
+    const convertAthenaThresholdValueToBytesRole = new Role(this, 'ConvertAthenaThresholdValueToBytesRole', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+    });
 
-    const convertAthenaThresholdValueToBytes: Function = new Function(this, 'ConvertAthenaThresholdValueToBytes', { // NOSONAR - Code for Lambda function
+    const convertAthenaThresholdValueToBytesRolePolicy = new Policy(this, 'ConvertAthenaThresholdValueToBytesRolePolicy', {
+      statements: [
+        new PolicyStatement({
+          actions: XRAY_ACTIONS,
+          resources: ['*'], // does not allow resource-level permissions
+          effect: Effect.ALLOW,
+        }),
+        new PolicyStatement({
+          sid: 'LamdaLogGroupPolicyStatement',
+          effect: Effect.ALLOW,
+          actions: CREATE_LOG_GROUP_PERMISSIONS,
+          resources: [LAMBDA_LOG_GROUP_ARN],
+        }),
+      ],
+    });
+    convertAthenaThresholdValueToBytesRolePolicy.attachToRole(convertAthenaThresholdValueToBytesRole);
+    NagSuppressions.addResourceSuppressions(convertAthenaThresholdValueToBytesRolePolicy, [
+      {
+        id: 'AwsSolutions-IAM5',
+        reason:
+          'All policies have been scoped to be as restrictive as possible. The create actions only support * as resource',
+      },
+    ]);
+    const convertAthenaThresholdValueToBytes: AwsLambdaFunction = new AwsLambdaFunction(this, 'ConvertAthenaThresholdValueToBytes', {
       description: 'Lambda function to convert Athena threshold value to bytes',
       runtime: LAMBDA_RUNTIME,
       code: Code.fromBucket(
         deploymentSourceBucket,
         `${props.solutionName}/${props.solutionVersion}/setAthenaThresholdValue.zip`,
       ),
+      role: convertAthenaThresholdValueToBytesRole.withoutPolicyUpdates(),
       handler: 'index.handler',
       timeout: cdk.Duration.seconds(LAMBDA_TIMEOUT_DURATION),
       memorySize: LAMBDA_MEMORY_SIZE,
-      role: createQuickSightDataSetRefreshSchedulesRole.withoutPolicyUpdates(),
       tracing: Tracing.ACTIVE,
       environment: {
         LOG_LEVEL: mappings.findInMap('InputConfiguration', logLevel.valueAsString),
-        USER_AGENT_STRING: USER_AGENT_STRING,
-        REGION: cdk.Aws.REGION,
-        QUICKSIGHT_PRINCIPAL_ARN: QUICKSIGHT_PRINCIPAL_ARN,
-        ATHENA_WORKGROUP_NAME: athenaWorkGroup.athenaWorkGroupName,
-        DATA_SOURCE_ARN: DATA_SOURCE_ARN,
-        QUICKSIGHT_SERVICE_LINKED_ROLE: QUICKSIGHT_SERVICE_LINKED_ROLE,
-        DEFAULT_DATABASE_NAME: glueDatabase.glueDB.databaseName,
-        SECURITY_LAKE_DATABASE_NAME: SECURITY_LAKE_DATABASE_NAME,
-        DEFAULT_VPC_DATATABLE_NAME: DEFAULT_VPC_TABLE_NAME,
-        DEFAULT_SECURITY_HUB_DATATABLE_NAME: DEFAULT_SECURITY_HUB_TABLE_NAME,
-        DEFAULT_CLOUDTRAIL_DATATABLE_NAME: DEFAULT_CLOUDTRAIL_TABLE_NAME,
-        SECURITY_LAKE_VPC_TABLE_NAME: SECURITY_LAKE_VPC_TABLE_NAME,
-        SECURITY_LAKE_SECURITY_HUB_TABLE_NAME: SECURITY_LAKE_SECURITY_HUB_TABLE_NAME,
-        SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME: SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME,
-        ROLLUP_REGION: ROLLUP_REGION_FOR_SECURITY_LAKE,
-        DEFAULT_QUERY_WINDOW_DURATION: DEFAULT_QUERY_WINDOW_DURATION,
+        USER_AGENT_STRING: USER_AGENT_STRING
       },
     });
 
@@ -1522,6 +1588,9 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
         },
       },
     );
+    convertAthenaThresholdValueToBytesCustomResource.node.addDependency(convertAthenaThresholdValueToBytesLogGroup);
+    convertAthenaThresholdValueToBytesCustomResource.node.addDependency(convertAthenaThresholdValueToBytesRolePolicy);
+    
 
     const athenaAlarmForDataScanned = new Alarm(this, 'AthenaAlarmForDataScanned', {
       datapointsToAlarm: DATA_POINTS_FOR_ATHENA_ALARM,
@@ -1557,16 +1626,6 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
       value: mappings.findInMap('SolutionConfiguration', 'Version'),
       exportName: cdk.Fn.join('-', ['SolutionVersion', ROLLUP_REGION_FOR_SECURITY_LAKE]),
     }).overrideLogicalId('SolutionVersion');
-
-    new CfnOutput(this, 'QuickSightAdminGroupArn', {
-      description: 'QuickSight Admin Group Arn',
-      value: quickSightUserGroupsCustomResource.getAttString('Admin'),
-    }).overrideLogicalId('QuickSightAdminGroupArn');
-
-    new CfnOutput(this, 'QuickSightReadGroupArn', {
-      description: 'QuickSight Read Group Arn',
-      value: quickSightUserGroupsCustomResource.getAttString('Read'),
-    }).overrideLogicalId('QuickSightReadGroupArn');
 
     new CfnOutput(this, 'SecurityHubSSMParameterUrl', { //NOSONAR - The output is needed to access SSM parameter
       description: 'Url to access SecurityHub SSM Parameter',

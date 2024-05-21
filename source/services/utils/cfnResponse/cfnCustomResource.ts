@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import axios, { RawAxiosRequestConfig, AxiosResponse } from 'axios';
-import { Context, CloudFormationCustomResourceEvent } from 'aws-lambda';
-import { CompletionStatus } from './interfaces';
+import { CloudFormationCustomResourceEvent } from 'aws-lambda';
+import { CfnResponseData } from './interfaces';
 import { logger } from '../logger';
 
 export async function sendCustomResourceResponseToCloudFormation(
   event: CloudFormationCustomResourceEvent,
-  context: Context,
-  response: CompletionStatus,
+  response: CfnResponseData,
 ): Promise<AxiosResponse> {
   logger.debug({
     label: 'CreateLakeFormationPermissions/Handler',
@@ -19,7 +18,7 @@ export async function sendCustomResourceResponseToCloudFormation(
   });
   const responseBody = JSON.stringify({
     Status: response.Status,
-    Reason: `See the details in CloudWatch Log Stream: ${context.logStreamName}`,
+    Reason: response.Error?.Message,
     PhysicalResourceId: event.LogicalResourceId,
     StackId: event.StackId,
     RequestId: event.RequestId,

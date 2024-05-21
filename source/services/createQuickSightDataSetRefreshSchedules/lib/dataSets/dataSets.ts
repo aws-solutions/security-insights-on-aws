@@ -30,5 +30,6 @@ export const listOfDataSetIds: string[] = [
   'Security_Insights_Cloudtrail_Root_Logins',
   'Security_Insights_Cloudtrail_Route_Table_Changes',
   'Security_Insights_Cloudtrail_Security_Group_Changes',
-  'Security_Insights_Cloudtrail_UID_API_Failures'
+  'Security_Insights_Cloudtrail_UID_API_Failures',
+  'Security_Insights_Security_Hub_Findings_Summary_Standards'
 ];

@@ -106,20 +106,20 @@ export const updateEventCloudFormationThresholdUnitInGB = {
 
 export const responseUrl = "testURL"
 
-export const responseBodySuccessForUnitInMB = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":104857600}}"
-export const responseConfigForUnitInMB =  {"headers": {"Content-Length": 225, "Content-Type": ""}}
+export const responseBodySuccessForUnitInMB = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":104857600}}"
+export const responseConfigForUnitInMB =  {"headers": {"Content-Length": 174, "Content-Type": ""}}
 
-export const responseBodySuccessForUnitInGB = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":107374182400}}"
-export const responseConfigForUnitInGB =  {"headers": {"Content-Length": 228, "Content-Type": ""}}
+export const responseBodySuccessForUnitInGB = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":107374182400}}"
+export const responseConfigForUnitInGB =  {"headers": {"Content-Length": 177, "Content-Type": ""}}
 
-export const responseBodySuccessForUnitInTB = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":1099511627776}}"
-export const responseConfigForUnitInTB =  {"headers": {"Content-Length": 229, "Content-Type": ""}}
+export const responseBodySuccessForUnitInTB = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":1099511627776}}"
+export const responseConfigForUnitInTB =  {"headers": {"Content-Length": 178, "Content-Type": ""}}
 
-export const responseBodySuccessForUnitInPB = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":1125899906842624}}"
-export const responseConfigForUnitInPB =  {"headers": {"Content-Length": 232, "Content-Type": ""}}
+export const responseBodySuccessForUnitInPB = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":1125899906842624}}"
+export const responseConfigForUnitInPB =  {"headers": {"Content-Length": 181, "Content-Type": ""}}
 
-export const responseBodySuccessForUnitInEB = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":1152921504606847000}}"
-export const responseConfigForUnitInEB =  {"headers": {"Content-Length": 235, "Content-Type": ""}}
+export const responseBodySuccessForUnitInEB =  "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"ThresholdValueInBytes\":1152921504606847000}}"
+export const responseConfigForUnitInEB =  {"headers": {"Content-Length": 184, "Content-Type": ""}}
 
 export const reponseBodyFailure = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"DataSetError\"}}}"
 export const responseConfigFailure  =  {"headers": {"Content-Length": 254, "Content-Type": ""}}

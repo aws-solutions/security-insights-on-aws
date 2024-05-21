@@ -3,7 +3,13 @@
 
 import { StatusTypes } from './enum';
 
-export interface CompletionStatus {
+export interface ErrorDetails {
+  Code: string,
+  Message: string
+}
+
+export interface CfnResponseData {
   Status: StatusTypes;
-  Data: Record<string, unknown> | { Error?: { Code: string; Message: string } };
+  Data?: Record<string, any>;
+  Error?: ErrorDetails;
 }
