@@ -4,7 +4,6 @@
 import { Context, CloudFormationCustomResourceEvent } from 'aws-lambda';
 import { sendCustomResourceResponseToCloudFormation } from './utils/cfnResponse/cfnCustomResource';
 import { AxiosResponse } from 'axios';
-import { CompletionStatus } from './lib/helpers/interfaces';
 import { StatusTypes } from './lib/helpers/enum';
 import { RefreshScheduleOperations } from './lib/serviceOperations/refreshScheduleOperations';
 import { QuickSightClient } from '@aws-sdk/client-quicksight';
@@ -15,6 +14,7 @@ import { RefreshScheduleManager } from './lib/resourceManagers/refreshScheduleMa
 import { CreateEventHandler } from './lib/handlers/createEventHandler';
 import { DeleteEventHandler } from './lib/handlers/deleteEventHandler';
 import { UpdateEventHandler } from './lib/handlers/updateEventHandler';
+import { CfnResponseData } from './utils/cfnResponse/interfaces';
 
 export async function handler(
   event: CloudFormationCustomResourceEvent,
@@ -28,9 +28,12 @@ export async function handler(
       context: context,
     },
   });
-  const response: CompletionStatus = {
+  const response: CfnResponseData = {
     Status: StatusTypes.SUCCESS,
-    Data: {},
+    Error: {
+      Code: "",
+      Message: ""
+    },
   };
 
   let refreshScheduleManager = getResourceManagerObjects();
@@ -60,12 +63,12 @@ export async function handler(
       },
     });
     response.Status = StatusTypes.FAILED;
-    response.Data.Error = {
+    response.Error = {
       Code: error.code ?? 'CustomResourceError',
       Message: error.message ?? 'Error occurred when executing CreateLakeFormationPermissions handler',
     };
   } finally {
-    await sendCustomResourceResponseToCloudFormation(event, context, response);
+    await sendCustomResourceResponseToCloudFormation(event, response);
   }
 }
 

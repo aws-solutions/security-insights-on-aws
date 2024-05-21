@@ -17,8 +17,8 @@ export const createEventForCloudFormation = {
     }
 }
 export const responseUrl = "https://cloudformation-custom-resource-response-useast1.s3.amazonaws.com/"
-export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"QuickSightDataSetCreator\",\"StackId\":\"arn:aws:cloudformation:us-east-1:111111111111:stack/testversion/\",\"RequestId\":\"11111111-1111-1111-1111-111111111\",\"LogicalResourceId\":\"QuickSightDataSetCreator\",\"Data\":{\"UUID\":\"123456\"}}"
-export const responseConfig  =  {"headers": {"Content-Length": 328, "Content-Type": ""}}
+export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"PhysicalResourceId\":\"QuickSightDataSetCreator\",\"StackId\":\"arn:aws:cloudformation:us-east-1:111111111111:stack/testversion/\",\"RequestId\":\"11111111-1111-1111-1111-111111111\",\"LogicalResourceId\":\"QuickSightDataSetCreator\",\"Data\":{\"UUID\":\"123456\"}}"
+export const responseConfig  =  {"headers": {"Content-Length": 265, "Content-Type": ""}}
 
 export const reponseBodyFailure = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"QuickSightDataSetCreator\",\"StackId\":\"arn:aws:cloudformation:us-east-1:111111111111:stack/testversion/\",\"RequestId\":\"11111111-1111-1111-1111-111111111\",\"LogicalResourceId\":\"QuickSightDataSetCreator\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"GrantPermissionsError\"}}}"
 export const responseConfigFailure  =  {"headers": {"Content-Length": 384, "Content-Type": ""}}

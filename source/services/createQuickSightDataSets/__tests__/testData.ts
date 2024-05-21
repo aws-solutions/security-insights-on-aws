@@ -178,19 +178,18 @@ export const getParameterCommandResponseForAppFabric = {
 
 
 export const responseUrl = "testURL"
-export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"Result\":\"None\"}}"
-export const responseConfig  =  {"headers": {"Content-Length": 207, "Content-Type": ""}}
-export const reponseBodyFailure = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"DataSetError\"}}}"
-export const responseConfigFailure  =  {"headers": {"Content-Length": 254, "Content-Type": ""}}
+export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"Result\":\"None\"}}"
+export const responseConfig  =  {"headers": {"Content-Length": 156, "Content-Type": ""}}
+export const reponseBodyFailure = "{\"Status\":\"FAILED\",\"Reason\":\"DataSetError\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\"}"
+export const responseConfigFailure  =  {"headers": {"Content-Length": 142, "Content-Type": ""}}
 export const responseConfigFailureForDeletion  =  {"headers": {"Content-Length": 368, "Content-Type": ""}}
 export const responseBodyFailureForDeletion = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"QuickSightDataSetCreator\",\"StackId\":\"arn:aws:cloudformation:us-east-1:111111111111:stack/testversion/\",\"RequestId\":\"11111111-1111-1111-1111-111111111\",\"LogicalResourceId\":\"QuickSightDataSetCreator\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"Error\"}}}"
 export const testContext = {
     "invokedFunctionArn": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
     "awsRequestId": "testID"
 }
-export const datasourceCreationFailureResponseBody = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"Data source creation failed for the data source AthenaDataSourceSecurityInsights with error Error: DataSetError\"}}}"
-
-export const datasourceCreatioConfigFailure  =  {"headers": {"Content-Length": 353, "Content-Type": ""}}
+export const datasourceCreationFailureResponseBody = "{\"Status\":\"FAILED\",\"Reason\":\"Data source creation failed for the data source AthenaDataSourceSecurityInsights with error Error: DataSetError\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\"}"
+export const datasourceCreatioConfigFailure  =  {"headers": {"Content-Length": 241, "Content-Type": ""}}
 
 
 export const createDataSetCommandInput = {
@@ -237,5 +236,20 @@ export const createDataSetCommandInput = {
                     }
                 }
             }
-        }
+}
 
+export const updateEventCloudFormation = {
+    "RequestType": "Update",
+    "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "ResponseURL": "testURL",
+    "StackId": "testId",
+    "RequestId": "testId",
+    "LogicalResourceId": "testId",  
+    "ResourceType": "Custom::CreateQuickSightDataSets",
+    "ResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:CreateQuickSightDataSets",
+        "AccountId": "111111111111",
+        "Region": "us-east-1",
+        "Version": "1.0.1"
+    }
+}

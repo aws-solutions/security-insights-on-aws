@@ -122,7 +122,8 @@ export const updateEventFromWeeklyToDailySchedule = {
         "DayOfMonth": "1",
         "Region": "us-east-1",
         "RefreshType": "FULL_REFRESH",
-        "Interval": "Daily"
+        "Interval": "Daily",
+        "Version": "1.0.0"
     },
     "OldResourceProperties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
@@ -131,7 +132,8 @@ export const updateEventFromWeeklyToDailySchedule = {
         "DayOfMonth": "1",
         "Region": "us-east-1",
         "RefreshType": "FULL_REFRESH",
-        "Interval": "Weekly"
+        "Interval": "Weekly",
+        "Version": "1.0.0"
     }
 }
 export const deleteEventWithDailySchedule = {
@@ -161,10 +163,68 @@ export const deleteRefreshScheduleCommandInput =
 }
 
 export const responseUrl = "testURL"
-export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{}}"
-export const responseConfig  =  {"headers": {"Content-Length": 192, "Content-Type": ""}}
+export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\"}"
+export const responseConfig  =  {"headers": {"Content-Length": 131, "Content-Type": ""}}
 
-export const reponseBodyFailure = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{}}"
-export const responseConfigFailure  =  {"headers": {"Content-Length": 192, "Content-Type": ""}}
+export const reponseBodyFailure = "{\"Status\":\"FAILED\",\"Reason\":\"CreateScheduleError\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\"}"
+export const responseConfigFailure  =  {"headers": {"Content-Length": 149, "Content-Type": ""}}
 export const responseConfigFailureForDeletion  =  {"headers": {"Content-Length": 368, "Content-Type": ""}}
 export const responseBodyFailureForDeletion = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"QuickSightDataSetCreator\",\"StackId\":\"arn:aws:cloudformation:us-east-1:111111111111:stack/testversion/\",\"RequestId\":\"11111111-1111-1111-1111-111111111\",\"LogicalResourceId\":\"QuickSightDataSetCreator\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"Error\"}}}"
+
+export const solutionUpgradeEvent1 = {
+    "RequestType": "Update",
+    "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "ResponseURL": "testURL",
+    "StackId": "testId",
+    "RequestId": "testId",
+    "LogicalResourceId": "testId",
+    "ResourceType": "Custom::CreateQuickSightDataSetRefreshSchedules",
+    "ResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Daily",
+        "Version": "1.0.1"
+    },
+    "OldResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Weekly",
+        "Version": "1.0.0"
+    }
+}
+export const solutionUpgradeEvent2 = {
+    "RequestType": "Update",
+    "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:testFunction",
+    "ResponseURL": "testURL",
+    "StackId": "testId",
+    "RequestId": "testId",
+    "LogicalResourceId": "testId",
+    "ResourceType": "Custom::CreateQuickSightDataSetRefreshSchedules",
+    "ResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Daily",
+        "Version": "1.0.1"
+    },
+    "OldResourceProperties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:test",
+        "DayOfWeek": "MONDAY",
+        "AccountId": "111111111111",
+        "DayOfMonth": "1",
+        "Region": "us-east-1",
+        "RefreshType": "FULL_REFRESH",
+        "Interval": "Weekly",
+    }
+}

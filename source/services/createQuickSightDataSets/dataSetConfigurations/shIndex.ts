@@ -5,3 +5,4 @@ export { dataset as securityInsightsSecurityHubFindingsBySeverity } from './secu
 export { dataset as securityInsightsSecurityHubFindingsByStandards } from './securityHubDatasets/securityInsightsSecurityHubFindingsByStandards'
 export { dataset as securityInsightsSecurityHubGuardDutyFindings } from './securityHubDatasets/securityInsightsSecurityHubGuardDutyFindings'
 export { dataset as securityInsightsSecurityHubUnresolvedFindings } from './securityHubDatasets/securityInsightsSecurityHubUnresolvedFindings'
+export { dataset as securityInsightsSecurityHubFindingsSummaryStandards } from './securityHubDatasets/securityInsightsSecurityHubFindingsSummaryStandards'

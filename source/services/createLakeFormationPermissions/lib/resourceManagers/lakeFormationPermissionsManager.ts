@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+  CREATE_USER_GROUPS,
   CURRENT_ACCOUNT_ID,
   DELAY_IN_SECONDS_FOR_RATE_LIMITING,
   LAMBDA_EXECUTION_ROLE_ARN,
-  LIST_OF_PRINCIPALS_FOR_DATA_LAKE,
+  LIST_OF_PRINCIPALS_WITH_USER_GROUPS,
+  LIST_OF_PRINCIPAL_WITHOUT_USER_GROUPS,
   LIST_OF_RESOURCE_LINKS,
   LIST_OF_TABLE_NAMES_FOR_DASHBOARD,
   RESOURCE_LINK_DATABASE_NAME,
@@ -34,6 +36,7 @@ export class LakeFormationsPermissionsManager {
   }
 
   public setupLakeFormationPermissionsForTablesSharedFromSecurityLakeAccount = async () => {
+    let LIST_OF_PRINCIPALS_FOR_DATA_LAKE = this.getListOfPrincipals()
     logger.debug({
       label: 'CreateLakeFormationPermissions/Handler',
       message: {
@@ -85,6 +88,7 @@ export class LakeFormationsPermissionsManager {
   };
 
   public setupLakeFormationPermissionsForTablesInCurrentAccount = async () => {
+    let LIST_OF_PRINCIPALS_FOR_DATA_LAKE = this.getListOfPrincipals()
     logger.debug({
       label: 'CreateLakeFormationPermissions/Handler',
       message: {
@@ -250,6 +254,7 @@ export class LakeFormationsPermissionsManager {
   };
 
   public updateLakeFormationPermissionsForTablesSharedFromSecurityLakeAccount = async () => {
+    let LIST_OF_PRINCIPALS_FOR_DATA_LAKE = this.getListOfPrincipals()
     await this.addLakeFormationPermissionForTables(
       RESOURCE_LINK_DATABASE_NAME,
       LIST_OF_RESOURCE_LINKS,
@@ -260,6 +265,7 @@ export class LakeFormationsPermissionsManager {
   }
 
   public updateLakeFormationPermissionsForTablesInCurrentAccount = async () => {
+    let LIST_OF_PRINCIPALS_FOR_DATA_LAKE = this.getListOfPrincipals()
     await this.addLakeFormationPermissionForTables(
       SECURITY_LAKE_DATABASE_NAME,
       LIST_OF_TABLE_NAMES_FOR_DASHBOARD,
@@ -299,6 +305,7 @@ export class LakeFormationsPermissionsManager {
   }
 
   public updateLakeFormationPermissionsForDatabaseInCurrentAccount = async () => {
+    let LIST_OF_PRINCIPALS_FOR_DATA_LAKE = this.getListOfPrincipals()
     await this.addLakeFormationPermissionForDatabase(
       SECURITY_LAKE_DATABASE_NAME,
       LIST_OF_PRINCIPALS_FOR_DATA_LAKE,
@@ -308,11 +315,24 @@ export class LakeFormationsPermissionsManager {
   }
 
   public updateLakeFormationPermissionsForResourceLinkDatabase = async () => {
+    let LIST_OF_PRINCIPALS_FOR_DATA_LAKE = this.getListOfPrincipals()
     await this.addLakeFormationPermissionForDatabase(
       RESOURCE_LINK_DATABASE_NAME,
       LIST_OF_PRINCIPALS_FOR_DATA_LAKE,
       CURRENT_ACCOUNT_ID,
       PERMISSION_FOR_RESOURCE_LINK_DATABASE,
     );
+  }
+
+  private getListOfPrincipals = () => {
+    let listOfPrincipals = (CREATE_USER_GROUPS === 'Yes') ? LIST_OF_PRINCIPALS_WITH_USER_GROUPS: LIST_OF_PRINCIPAL_WITHOUT_USER_GROUPS
+    logger.debug({
+      label: 'CreateLakeFormationPermissions/Handler',
+      message: {
+        data: 'List of all principals',
+        list: JSON.stringify(listOfPrincipals)
+      },
+    });
+    return listOfPrincipals
   }
 }

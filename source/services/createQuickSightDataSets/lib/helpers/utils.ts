@@ -11,20 +11,34 @@ import * as appFabricDataSetConfigurations from '../../dataSetConfigurations/app
 import { logger } from '../../utils/logger';
 import { GET_DATA_SET_PERMISSIONS, GET_DATA_SOURCE_PERMISSIONS } from './permissions';
 import {
+  CURRENT_ACCOUNT_ID,
   DATA_SOURCE_APP_FABRIC_NAME,
   DATA_SOURCE_CLOUDTRAIL_NAME,
   DATA_SOURCE_SECURITY_HUB_NAME,
   DATA_SOURCE_VPC_NAME,
+  DEFAULT_APP_FABRIC_DATATABLE_NAME,
+  DEFAULT_CLOUDTRAIL_TABLE_NAME,
+  DEFAULT_DATABASE_NAME,
+  DEFAULT_SECURITY_HUB_TABLE_NAME,
+  DEFAULT_VPC_TABLE_NAME,
   QUERY_WINDOW_DURATION,
+  RESOURCE_LINK_DATABASE_NAME,
+  SECURITY_LAKE_ACCOUNT_ID,
+  SECURITY_LAKE_APP_FABRIC_TABLE_NAME,
+  SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME,
+  SECURITY_LAKE_DATABASE_NAME,
+  SECURITY_LAKE_SECURITY_HUB_TABLE_NAME,
+  SECURITY_LAKE_VPC_TABLE_NAME,
   SPICE,
   TABLE_ID,
   TEST_DATABASE_NAME,
   TEST_DATATABLE_NAME,
 } from './constants';
+import { DatabaseDetail } from './interfaces';
 
 export const createDataSetObjects = function (
   principalArn: string,
-  context: Context,
+  awsAccountId: string,
   dataSource: string,
   databaseName: string,
   dataTableName: string,
@@ -39,7 +53,6 @@ export const createDataSetObjects = function (
   let dataSetConfigurations: any[] = [];
   let dataSetList: QuickSightDataSet[] = [];
   let resourcePermissionsList: ResourcePermission[] = getDataSetResourcePermissions(principalArn);
-  let awsAccountId = getAwsAccountId(context);
   switch (dataSource) {
     case DATA_SOURCE_SECURITY_HUB_NAME:
       dataSetConfigurations = Object.values(shDataSetConfigurations);
@@ -139,4 +152,81 @@ export const getAwsAccountId = function (context: Context): string {
   });
   const awsAccountId = context.invokedFunctionArn.split(':')[4];
   return awsAccountId;
+};
+
+export const getDataSourceName = (eventName: string): string => {
+  logger.debug({
+    label: 'CreateQuickSightDataSets/Handler',
+    message: {
+      data: 'getDataSourceName method invoked',
+    },
+  });
+  let dataSourceName = eventName.split('/')[4];
+  return dataSourceName;
+};
+
+export const getDataTableAndDatabaseNames = (dataSource: string, sourceStatus: string): DatabaseDetail => {
+  logger.debug({
+    label: 'CreateQuickSightDataSets/Handler',
+    message: {
+      data: 'getDataTableAndDatabaseNames method invoked',
+    },
+  });
+  let dataBaseName = '';
+  let dataTableName = '';
+  let sourceValue: string = dataSource + sourceStatus;
+  switch (sourceValue) {
+    case 'vpcFlowLogsEnabled': {
+      dataBaseName = getDatabaseNameForCurrentAccount();
+      dataTableName = SECURITY_LAKE_VPC_TABLE_NAME;
+      break;
+    }
+    case 'vpcFlowLogsDisabled': {
+      dataBaseName = DEFAULT_DATABASE_NAME;
+      dataTableName = DEFAULT_VPC_TABLE_NAME;
+      break;
+    }
+    case 'cloudtrailEnabled': {
+      dataBaseName = getDatabaseNameForCurrentAccount();
+      dataTableName = SECURITY_LAKE_CLOUDTRAIL_TABLE_NAME;
+      break;
+    }
+    case 'cloudtrailDisabled': {
+      dataBaseName = DEFAULT_DATABASE_NAME;
+      dataTableName = DEFAULT_CLOUDTRAIL_TABLE_NAME;
+      break;
+    }
+    case 'securityHubEnabled': {
+      dataBaseName = getDatabaseNameForCurrentAccount();
+      dataTableName = SECURITY_LAKE_SECURITY_HUB_TABLE_NAME;
+      break;
+    }
+    case 'securityHubDisabled': {
+      dataBaseName = DEFAULT_DATABASE_NAME;
+      dataTableName = DEFAULT_SECURITY_HUB_TABLE_NAME;
+      break;
+    }
+    case 'appfabricEnabled': {
+      dataBaseName = getDatabaseNameForCurrentAccount();
+      dataTableName = SECURITY_LAKE_APP_FABRIC_TABLE_NAME;
+      break;
+    }
+    case 'appfabricDisabled': {
+      dataBaseName = DEFAULT_DATABASE_NAME;
+      dataTableName = DEFAULT_APP_FABRIC_DATATABLE_NAME;
+      break;
+    }
+  }
+  return {
+    databaseName: dataBaseName,
+    dataTableName: dataTableName,
+  };
+};
+
+export const getDatabaseNameForCurrentAccount = () => {
+  if (SECURITY_LAKE_ACCOUNT_ID === CURRENT_ACCOUNT_ID) {
+    return SECURITY_LAKE_DATABASE_NAME;
+  } else {
+    return RESOURCE_LINK_DATABASE_NAME;
+  }
 };

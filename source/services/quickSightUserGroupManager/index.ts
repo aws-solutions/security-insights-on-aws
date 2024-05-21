@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import axios, { RawAxiosRequestConfig, AxiosResponse } from 'axios';
-import { Context, CloudFormationCustomResourceEvent } from 'aws-lambda';
+import { CloudFormationCustomResourceEvent } from 'aws-lambda';
 import { logger } from './utils/logger';
 import { UserGroupManager } from './lib/resourceManagers/userGroupManager';
 import { QuickSightHelper } from './lib/serviceOperations/quickSightHelper';
 import { ServiceClientProvider} from './lib/helpers/serviceClientProvider'
-import { CompletionStatus } from './lib/helpers/interfaces';
+import { CfnResponseData } from './utils/cfnResponse/interfaces';
 import {
   StatusTypes,
   CustomResource,
@@ -19,18 +18,23 @@ import {
 } from './lib/helpers/constants';
 import { DEFAULT_QUICKSIGHT_USER_GROUPS } from './lib/helpers/permissions';
 import { QuickSightClient } from '@aws-sdk/client-quicksight';
+import { sendCustomResourceResponseToCloudFormation } from './utils/cfnResponse/cfnCustomResource';
+
 
 export async function handler(
   event: CloudFormationCustomResourceEvent,
-  context: Context,
-): Promise<CompletionStatus | void> {
+): Promise<CfnResponseData | void> {
   logger.debug({
     label: 'handler',
     message: `received event: ${JSON.stringify(event)}`,
   });
 
-  const response: CompletionStatus = {
+  const response: CfnResponseData = {
     Status: StatusTypes.SUCCESS,
+    Error: {
+      Code: '',
+      Message: ''
+    },
     Data: {
       AdminGroupArn: '',
       ReadGroupArn: '',
@@ -55,7 +59,6 @@ export async function handler(
           DEFAULT_QUICKSIGHT_USER_GROUPS,
           response,
         );
-
       }
       if (event.RequestType === RequestType.DELETE) {
         await userGroupManager.handleDeleteUserGroups(DEFAULT_QUICKSIGHT_USER_GROUPS);
@@ -63,41 +66,18 @@ export async function handler(
     }
   } catch (error) {
     response.Status = StatusTypes.FAILED;
-    response.Data = error;
+    response.Error = {
+      Code: error.code ?? 'CustomResourceError',
+      Message: error.message ?? 'Custom resource error occurred when creating QuickSight Datasets.',
+    };
     logger.error({
-      label: 'handler',
-      message: `error: ${JSON.stringify(error)}`,
+      label: 'QuickSightUserGroupManager/Handler',
+      message: {
+        data: 'Error occurred while creating user groups',
+        error: error,
+      },
     });
   } finally {
-    await SendCustomResourceResponseToCloudFormation(event, context, response);
+    await sendCustomResourceResponseToCloudFormation(event, response);
   }
-}
-
-export async function SendCustomResourceResponseToCloudFormation(
-  event: CloudFormationCustomResourceEvent,
-  context: Context,
-  response: CompletionStatus,
-): Promise<AxiosResponse> {
-  logger.debug({
-    label: 'handler/SendCustomResourceResponseToCloudFormation',
-    message: `Send response to custom resource waiting in Cloudformation`,
-  });
-  const responseBody = JSON.stringify({
-    Status: response.Status,
-    Reason: `See the details in CloudWatch Log Stream: ${context.logStreamName}`,
-    PhysicalResourceId: context.logGroupName,
-    StackId: event.StackId,
-    RequestId: event.RequestId,
-    LogicalResourceId: event.LogicalResourceId,
-    Data: response.Data,
-  });
-
-  const config: RawAxiosRequestConfig = {
-    headers: {
-      'Content-Type': '',
-      'Content-Length': responseBody.length,
-    },
-  };
-
-  return axios.put(event.ResponseURL, responseBody, config);
 }

@@ -9,10 +9,10 @@ export const dataset = {
         CustomSql: {
           DataSourceArn: "test",
           Name: "Security_Insights_Cloudtrail_Root_Logins",
-          SqlQuery: "SELECT status AS \"Login Status\",\n\tCOUNT(*) AS \"Count\",\n\tCast(is_mfa AS varchar) AS \"MFA Used\"\nFROM \"test_database_name\".\"test_datatable_name\"\nWHERE time_dt BETWEEN CURRENT_TIMESTAMP - INTERVAL 'query_window_duration' DAY\n\tAND CURRENT_TIMESTAMP\n\tAND api.operation = 'ConsoleLogin'\n\tAND category_name = 'Identity & Access Management'\n\tAND actor.user.type = 'Root'\nGROUP BY status,\n\tis_mfa",
+          SqlQuery: "SELECT status AS \"ConsoleLoginStatus\",\n\tCOUNT(*) AS \"Count\",\n\tCast(is_mfa AS varchar) AS \"MFAUsed\"\nFROM \"test_database_name\".\"test_datatable_name\"\nWHERE time_dt BETWEEN CURRENT_TIMESTAMP - INTERVAL 'query_window_duration' DAY\n\tAND CURRENT_TIMESTAMP\n\tAND api.operation = 'ConsoleLogin'\n\tAND category_name = 'Identity & Access Management'\n\tAND actor.user.type = 'Root'\nGROUP BY status,\n\tis_mfa",
           Columns: [
               {
-                  Name: "Login Status",
+                  Name: "ConsoleLoginStatus",
                   Type: "STRING"
               },
               {
@@ -20,8 +20,8 @@ export const dataset = {
                   Type: "INTEGER"
               },
               {
-                  Name: "MFA Used",
-                  Type: "BOOLEAN"
+                  Name: "MFAUsed",
+                  Type: "STRING"
               }
           ]
       },
@@ -34,9 +34,9 @@ export const dataset = {
           {
             ProjectOperation: {
               ProjectedColumns: [
-                "Login Status",
+                "ConsoleLoginStatus",
                 "Count",
-                "MFA Used"
+                "MFAUsed"
               ],
             },
           },
@@ -48,7 +48,7 @@ export const dataset = {
     },
     OutputColumns: [
       {
-        Name: "Login Status",
+        Name: "ConsoleLoginStatus",
         Type: "STRING"
       },
       {
@@ -56,8 +56,8 @@ export const dataset = {
           Type: "INTEGER"
       },
       {
-          Name: "MFA Used",
-          Type: "INTEGER"
+          Name: "MFAUsed",
+          Type: "STRING"
       }
     ],
     DataSetUsageConfiguration: {

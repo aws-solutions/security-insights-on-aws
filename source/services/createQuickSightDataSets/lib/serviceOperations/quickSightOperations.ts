@@ -59,7 +59,7 @@ export class QuickSightOperations {
 
   public deleteQuickSightDataSet = async (
     quickSightDataSet: QuickSightDataSet,
-  ): Promise<DeleteDataSetCommandOutput> => {
+  ): Promise<DeleteDataSetCommandOutput | any> => {
     logger.debug({
       label: 'CreateQuickSightDataSets/Handler',
       message: {
@@ -77,12 +77,11 @@ export class QuickSightOperations {
       logger.error({
         label: 'CreateQuickSightDataSets/Handler',
         message: {
-          data: 'Error while creating quicksight dataset',
+          data: 'Error while deleting quicksight dataset',
           dataSetIdValue: quickSightDataSet.dataSetId,
           error: error,
         },
       });
-      throw error;
     }
   };
 

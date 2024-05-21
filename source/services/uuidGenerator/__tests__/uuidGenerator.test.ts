@@ -3,7 +3,7 @@
 
 import 'jest';
 import { handler } from '../index';
-import { Context, CloudFormationCustomResourceEvent } from 'aws-lambda';
+import { CloudFormationCustomResourceEvent } from 'aws-lambda';
 import axios from 'axios';
 import { createEventForCloudFormation, responseBodySuccess, responseConfig, responseUrl } from './testData';
 jest.mock('axios');
@@ -26,7 +26,7 @@ describe('it should return uuid when CloudFormation template is deployed', () =>
     });
 
     it('it should return uuid', async function () {
-        await handler(createEventForCloudFormation as CloudFormationCustomResourceEvent, {} as Context);
+        await handler(createEventForCloudFormation as CloudFormationCustomResourceEvent);
         expect(axios.put).toHaveBeenCalledTimes(1);
         expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
     });

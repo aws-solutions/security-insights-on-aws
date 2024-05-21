@@ -3,7 +3,7 @@
 
 import { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
 import { QuickSightOperations } from '../serviceOperations/quickSightOperations';
-import { CompletionStatus, DataSourceAnDataTableMap } from '../helpers/interfaces';
+import { DataSetConfiguration, DataSourceAnDataTableMap, DataSourceConfiguration } from '../helpers/interfaces';
 import { sendCustomResourceResponseToCloudFormation } from '../../utils/cfnResponse/cfnCustomResource';
 import { StatusTypes } from '../helpers/enum';
 import {
@@ -20,8 +20,10 @@ import {
   DATA_SOURCE_APP_FABRIC_NAME,
   DEFAULT_APP_FABRIC_DATATABLE_NAME,
   DELAY_IN_SECONDS_FOR_RATE_LIMITING,
+  SSM_PARAMETERS_NAME_LIST,
+  DELAY_IN_SECONDS_FOR_DATA_SOURCE_CREATION,
 } from '../helpers/constants';
-import { getAwsAccountId, createDataSetObjects, getDataSourceResourcePermissions } from '../helpers/utils';
+import { getAwsAccountId, getDataSourceResourcePermissions, getDataTableAndDatabaseNames, getDataSourceName, createDataSetObjects } from '../helpers/utils';
 import { logger } from '../../utils/logger';
 import { QuickSightDataSet } from '../resourceManagers/quickSightDataSet';
 import { QuickSightDataSource } from '../resourceManagers/quickSightDataSource';
@@ -31,16 +33,20 @@ import {
   DeleteDataSourceCommandOutput,
 } from '@aws-sdk/client-quicksight';
 import { createDelayInSeconds } from '../../utils/delay';
+import { CfnResponseData } from '../../utils/cfnResponse/interfaces';
+import { SSMOperations } from '../serviceOperations/ssmOperations';
 
 export class CloudFormationEventHandler {
   constructor(
     private event: CloudFormationCustomResourceEvent,
     private context: Context,
     private quickSightOperations: QuickSightOperations,
+    private ssmOperations: SSMOperations
   ) {
     this.event = event;
     this.context = context;
     this.quickSightOperations = quickSightOperations;
+    this.ssmOperations = ssmOperations
   }
 
   public handleEvent = async () => {
@@ -50,9 +56,12 @@ export class CloudFormationEventHandler {
         data: 'CloudFormationEventHandler invoked',
       },
     });
-    const response: CompletionStatus = {
+    const response: CfnResponseData = {
       Status: StatusTypes.SUCCESS,
-      Data: {},
+      Error: {
+        Code: "",
+        Message: ""
+      },
     };
 
     const listOfDefaultSourceDataTablesNames: DataSourceAnDataTableMap[] = [
@@ -76,7 +85,7 @@ export class CloudFormationEventHandler {
           label: 'CreateQuickSightDataSets/handler',
           message: 'Request type is Update',
         });
-        response.Data = { Result: 'None' };
+        await this.handleUpdateEvent(response, awsAccountId, listOfDefaultSourceDataTablesNames);
       }
 
       if (this.event.RequestType == 'Delete') {
@@ -88,12 +97,12 @@ export class CloudFormationEventHandler {
       }
     } catch (error) {
       response.Status = StatusTypes.FAILED;
-      response.Data.Error = {
+      response.Error = {
         Code: error.code ?? 'CustomResourceError',
         Message: error.message ?? 'Custom resource error occurred when creating QuickSight Datasets.',
       };
     } finally {
-      await sendCustomResourceResponseToCloudFormation(this.event, this.context, response);
+      await sendCustomResourceResponseToCloudFormation(this.event, response);
     }
   };
 
@@ -159,14 +168,14 @@ export class CloudFormationEventHandler {
     return this.quickSightOperations.deleteQuickSightDataSource(dataSource);
   };
 
-  private createDataSets = async (dataSetList: QuickSightDataSet[]): Promise<void> => {
+  private createQuickSightDataSets = async (listOfDataSets: QuickSightDataSet[]): Promise<void> => {
     logger.debug({
       label: 'CreateQuickSightDataSets/Handler',
       message: {
-        data: 'createDataSets method invoked',
+        data: 'createQuickSightDataSets method invoked',
       },
     });
-    for (const dataSet of dataSetList) {
+    for (const dataSet of listOfDataSets) {
       logger.debug({
         label: 'CreateQuickSightDataSets/Handler',
         message: {
@@ -179,28 +188,8 @@ export class CloudFormationEventHandler {
     }
   };
 
-  private deleteDataSets = async (dataSetList: QuickSightDataSet[]): Promise<void> => {
-    logger.debug({
-      label: 'CreateQuickSightDataSets/Handler',
-      message: {
-        data: 'deleteDataSets method invoked',
-      },
-    });
-    for (const dataSet of dataSetList) {
-      logger.debug({
-        label: 'CreateQuickSightDataSets/Handler',
-        message: {
-          data: 'Iterating over list of datasets for deletion',
-          value: dataSet,
-        },
-      });
-      await this.quickSightOperations.deleteQuickSightDataSet(dataSet);
-      await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
-    }
-  };
-
   private handleCreateEvent = async (
-    response: CompletionStatus,
+    response: CfnResponseData,
     awsAccountId: string,
     listOfDefaultSourceDataTablesNames: DataSourceAnDataTableMap[],
   ): Promise<void> => {
@@ -211,23 +200,14 @@ export class CloudFormationEventHandler {
       },
     });
     await this.createDataSource(awsAccountId);
-
-    for (const dataSource of listOfDefaultSourceDataTablesNames) {
-      const dataSetList: QuickSightDataSet[] = createDataSetObjects(
-        PRINCIPAL_ARN,
-        this.context,
-        dataSource.dataSourceName,
-        DEFAULT_DATABASE_NAME,
-        dataSource.dataTableName,
-        DEFAULT_QUERY_WINDOW_DURATION,
-      );
-      await this.createDataSets(dataSetList);
-      response.Data = { Result: 'None' };
-    }
+    await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_DATA_SOURCE_CREATION)); // Adding this delay for setting up datasource.
+    let listOfAllDataSets: QuickSightDataSet[] = this.getListOfAllDefaultDataSets(listOfDefaultSourceDataTablesNames, awsAccountId)
+    await this.createQuickSightDataSets(listOfAllDataSets)
+    response.Data = { Result: 'None' };
   };
 
   private handleDeleteEvent = async (
-    response: CompletionStatus,
+    response: CfnResponseData,
     awsAccountId: string,
     listOfDefaultSourceDataTablesNames: DataSourceAnDataTableMap[],
   ): Promise<void> => {
@@ -238,17 +218,75 @@ export class CloudFormationEventHandler {
       },
     });
     await this.deleteDataSource(awsAccountId);
+    let listOfAllDataSets: QuickSightDataSet[] = this.getListOfAllDefaultDataSets(listOfDefaultSourceDataTablesNames, awsAccountId)
+    await this.deleteDataSets(listOfAllDataSets)
+    response.Data = { Result: 'None' };
+  };
+
+  private deleteDataSets = async(listOfDataSets: QuickSightDataSet[]) => {
+    for (const dataSet of listOfDataSets) {
+        await this.quickSightOperations.deleteQuickSightDataSet(dataSet);
+        await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
+    }
+  }
+
+  private getListOfAllDefaultDataSets = (listOfDefaultSourceDataTablesNames: DataSourceAnDataTableMap[], awsAccountId: string) => {
+    let listOfAllDataSets: QuickSightDataSet[] = []
     for (const dataSource of listOfDefaultSourceDataTablesNames) {
-      const dataSetList: QuickSightDataSet[] = createDataSetObjects(
+      let listOfObjects = createDataSetObjects(
         PRINCIPAL_ARN,
-        this.context,
+        awsAccountId,
         dataSource.dataSourceName,
         DEFAULT_DATABASE_NAME,
         dataSource.dataTableName,
         DEFAULT_QUERY_WINDOW_DURATION,
-      );
-      await this.deleteDataSets(dataSetList);
-      response.Data = { Result: 'None' };
+      )
+      listOfObjects.forEach(dataset => {
+        listOfAllDataSets.push(dataset);
+      });
     }
+    return listOfAllDataSets
+  }
+
+  private handleUpdateEvent = async (
+    response: CfnResponseData,
+    awsAccountId: string,
+    listOfDefaultSourceDataTablesNames: DataSourceAnDataTableMap[],
+  ): Promise<void> => {
+    logger.debug({
+      label: 'CreateQuickSightDataSets/Handler',
+      message: {
+        data: 'handleUpdateEvent method invoked',
+      },
+    });
+
+    let listOfAllDataSets: QuickSightDataSet[] = this.getListOfAllDefaultDataSets(listOfDefaultSourceDataTablesNames, awsAccountId)
+    await this.deleteDataSets(listOfAllDataSets)
+    for (const parameterName of SSM_PARAMETERS_NAME_LIST) {
+      let dataSetConfig: DataSetConfiguration = await this.getDataSetConfigurationForSsmParameterName(parameterName)
+      let dataSetList = createDataSetObjects(
+        dataSetConfig.principalArn,
+        awsAccountId,
+        dataSetConfig.dataSourceName,
+        dataSetConfig.databaseName,
+        dataSetConfig.dataTableName,
+        dataSetConfig.queryWindowDuration,
+      )
+      await this.createQuickSightDataSets(dataSetList)
+    }
+    response.Data = { Result: 'None' };
   };
+  
+  private getDataSetConfigurationForSsmParameterName = async (ssmParameterName: string):Promise<DataSetConfiguration> => {
+    let dataSourceConfiguration: DataSourceConfiguration = await this.ssmOperations.getDataSourceConfiguration(ssmParameterName)
+    let dataSourceName = getDataSourceName(ssmParameterName)
+    let response = getDataTableAndDatabaseNames(dataSourceName, dataSourceConfiguration.status);
+    return {
+      principalArn: PRINCIPAL_ARN,
+      dataSourceName: dataSourceName,
+      dataTableName: response.dataTableName,
+      databaseName: response.databaseName,
+      queryWindowDuration: dataSourceConfiguration.queryWindowDuration
+    }
+  }
 }

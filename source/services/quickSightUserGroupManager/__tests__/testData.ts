@@ -47,8 +47,8 @@ export const readUserGroupInput = {
     "Namespace": "default"
 }
 export const responseUrl = "testURL"
-export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"AdminGroupArn\":\"\",\"ReadGroupArn\":\"\",\"Admin\":\"\",\"Read\":\"\",\"AdminUserGroup-us-east-1\":\"arn:aws:quicksight:us-east-1:111111111111:group/default/AdminUserGroup-us-east-1\",\"ReadUserGroup-us-east-1\":\"arn:aws:quicksight:us-east-1:111111111111:group/default/ReadUserGroup-us-east-1\"}}"
-export const responseConfig  =  {"headers": {"Content-Length": 437, "Content-Type": ""}}
+export const responseBodySuccess = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{}}"
+export const responseConfig  =  {"headers": {"Content-Length": 141, "Content-Type": ""}}
 export const reponseBodyFailure = "{\"Status\":\"FAILED\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"Error\":{\"Code\":\"CustomResourceError\",\"Message\":\"DataSetError\"}}}"
 export const responseConfigFailure  =  {"headers": {"Content-Length": 254, "Content-Type": ""}}
 export const responseConfigFailureForDeletion  =  {"headers": {"Content-Length": 368, "Content-Type": ""}}
@@ -107,8 +107,8 @@ export const UpdateAnalysisPermissionsCommandInput =
     ]
 }
 
-export const responseBodySuccessForDeletion = "{\"Status\":\"SUCCESS\",\"Reason\":\"See the details in CloudWatch Log Stream: undefined\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"AdminGroupArn\":\"\",\"ReadGroupArn\":\"\"}}"
-export const responseConfigForDeletion  =  {"headers": {"Content-Length": 198, "Content-Type": ""}}
+export const responseBodySuccessForDeletion = "{\"Status\":\"SUCCESS\",\"Reason\":\"\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"AdminGroupArn\":\"\",\"ReadGroupArn\":\"\"}}"
+export const responseConfigForDeletion  =  {"headers": {"Content-Length": 177, "Content-Type": ""}}
 
 export const adminUserGroupInputForDeletion = {
     "AwsAccountId": "111111111111", 
@@ -121,3 +121,6 @@ export const readUserGroupInputForDeletion = {
     "GroupName": "ReadUserGroup-us-east-1", 
     "Namespace": "default"
 }
+
+export const responseBodyForFailure = "{\"Status\":\"FAILED\",\"Reason\":\"UserGroupCreationError\",\"PhysicalResourceId\":\"testId\",\"StackId\":\"testId\",\"RequestId\":\"testId\",\"LogicalResourceId\":\"testId\",\"Data\":{\"AdminGroupArn\":\"\",\"ReadGroupArn\":\"\"}}"
+export const responseConfigForFailure  =  {"headers": {"Content-Length": 198, "Content-Type": ""}}

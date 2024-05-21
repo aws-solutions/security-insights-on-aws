@@ -26,6 +26,8 @@ import {
   responseConfig, 
   responseConfigFailure, 
   responseUrl, 
+  solutionUpgradeEvent1, 
+  solutionUpgradeEvent2, 
   testContext, 
   updateEventFromWeeklyToDailySchedule } from './testData';
 jest.mock('axios');
@@ -56,7 +58,7 @@ describe('it should create schedules during for CloudFormation create event', ()
 
       await handler(createEventWithDailySchedule as CloudFormationCustomResourceEvent, testContext as Context);
       
-      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 29);
+      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 30);
       expect(mockQuickSightClient).toHaveReceivedCommandWith(CreateRefreshScheduleCommand, createDailyRefreshScheduleCommandInput);
       expect(axios.put).toHaveBeenCalledTimes(1);
       expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
@@ -66,7 +68,7 @@ describe('it should create schedules during for CloudFormation create event', ()
 
       await handler(createEventWithWeeklySchedule as CloudFormationCustomResourceEvent, testContext as Context);
       
-      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 29);
+      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 30);
       expect(mockQuickSightClient).toHaveReceivedCommandWith(CreateRefreshScheduleCommand, createWeeklyRefreshScheduleCommandInput);
       expect(axios.put).toHaveBeenCalledTimes(1);
       expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
@@ -75,7 +77,7 @@ describe('it should create schedules during for CloudFormation create event', ()
    it('it should create monthly schedules', async function () {
       await handler(createEventWithMonthlySchedule as CloudFormationCustomResourceEvent, testContext as Context);
     
-      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 29);
+      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 30);
       expect(mockQuickSightClient).toHaveReceivedCommandWith(CreateRefreshScheduleCommand, createMonthlyRefreshScheduleCommandInput);
       expect(axios.put).toHaveBeenCalledTimes(1);
       expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
@@ -110,7 +112,7 @@ describe('it should update schedules during for CloudFormation update event', ()
 
     await handler(updateEventFromWeeklyToDailySchedule as CloudFormationCustomResourceEvent, testContext as Context);
     
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateRefreshScheduleCommand, 29);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateRefreshScheduleCommand, 30);
     expect(mockQuickSightClient).toHaveReceivedCommandWith(UpdateRefreshScheduleCommand, createDailyRefreshScheduleCommandInput);
     expect(axios.put).toHaveBeenCalledTimes(1);
     expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
@@ -148,7 +150,7 @@ describe('it should delete schedules during for CloudFormation delete event', ()
 
     await handler(deleteEventWithDailySchedule as CloudFormationCustomResourceEvent, testContext as Context);
     
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(DeleteRefreshScheduleCommand, 29);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(DeleteRefreshScheduleCommand, 30);
     expect(mockQuickSightClient).toHaveReceivedCommandWith(DeleteRefreshScheduleCommand, deleteRefreshScheduleCommandInput);
     expect(axios.put).toHaveBeenCalledTimes(1);
     expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
@@ -186,10 +188,76 @@ describe('it should send failure response to CloudFormation', () => {
 
     await handler(createEventWithDailySchedule as CloudFormationCustomResourceEvent, testContext as Context);
     
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 29);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 1);
     expect(mockQuickSightClient).toHaveReceivedCommandWith(CreateRefreshScheduleCommand, createDailyRefreshScheduleCommandInput);
     expect(axios.put).toHaveBeenCalledTimes(1);
     expect(axios.put).toHaveBeenCalledWith(responseUrl, reponseBodyFailure, responseConfigFailure);
+  });
+
+});
+
+describe('it should create schedules during for CloudFormation update event if the solution is upgraded', () => {
+  let mockedAxios = axios as jest.Mocked<typeof axios>;
+  let mockQuickSightClient: any;
+
+  beforeEach(() => {   
+      jest.resetAllMocks();     
+      mockedAxios.put.mockResolvedValue({});
+      mockQuickSightClient = mockClient(QuickSightClient);
+      mockQuickSightClient.on(CreateRefreshScheduleCommand).resolves({});
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    
+  });
+
+  afterAll(() => {
+      jest.resetAllMocks();
+  });
+
+  it('it should update daily schedules to weekly', async function () {
+
+    await handler(solutionUpgradeEvent1 as CloudFormationCustomResourceEvent, testContext as Context);
+    
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 30);
+    expect(mockQuickSightClient).toHaveReceivedCommandWith(CreateRefreshScheduleCommand, createDailyRefreshScheduleCommandInput);
+    expect(axios.put).toHaveBeenCalledTimes(1);
+    expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
+  });
+
+});
+
+describe('it should create schedules during for CloudFormation update event if the solution is upgraded', () => {
+  let mockedAxios = axios as jest.Mocked<typeof axios>;
+  let mockQuickSightClient: any;
+
+  beforeEach(() => {   
+      jest.resetAllMocks();     
+      mockedAxios.put.mockResolvedValue({});
+      mockQuickSightClient = mockClient(QuickSightClient);
+      mockQuickSightClient.on(CreateRefreshScheduleCommand).resolves({});
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    
+  });
+
+  afterAll(() => {
+      jest.resetAllMocks();
+  });
+
+  it('it should update daily schedules to weekly', async function () {
+
+    await handler(solutionUpgradeEvent2 as CloudFormationCustomResourceEvent, testContext as Context);
+    
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateRefreshScheduleCommand, 30);
+    expect(mockQuickSightClient).toHaveReceivedCommandWith(CreateRefreshScheduleCommand, createDailyRefreshScheduleCommandInput);
+    expect(axios.put).toHaveBeenCalledTimes(1);
+    expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
   });
 
 });

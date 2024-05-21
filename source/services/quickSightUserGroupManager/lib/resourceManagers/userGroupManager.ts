@@ -11,8 +11,9 @@ import {
   DELAY_IN_SECONDS_FOR_RATE_LIMITING,
   QUICKSIGHT_ADMIN_REGION,
 } from '../helpers/constants';
-import { QuickSightUserGroup, CompletionStatus } from '../helpers/interfaces';
+import { QuickSightUserGroup } from '../helpers/interfaces';
 import { createDelayInSeconds } from '../../utils/delay';
+import { CfnResponseData } from '../../utils/cfnResponse/interfaces';
 
 export class UserGroupManager {
   constructor(public quickSight: QuickSightHelper) {
@@ -23,7 +24,7 @@ export class UserGroupManager {
     dashboardID: string,
     analysisID: string,
     defaultUserGroups: QuickSightUserGroup[],
-    handlerResponse: CompletionStatus,
+    handlerResponse: CfnResponseData,
   ) => {
     logger.debug({
       label: 'helper/handleCreateUserGroups',
@@ -56,11 +57,12 @@ export class UserGroupManager {
     await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // observed issues with eventually consistent creation of QS groups
   };
 
-  updateHandlerResponse = (handlerResponse: CompletionStatus, groupArns: { [key: string]: string }) => {
-    for (const groupName in groupArns) {
-      handlerResponse.Data[groupName as keyof typeof handlerResponse.Data] = groupArns[groupName];
+  updateHandlerResponse = (handlerResponse: CfnResponseData, groupArns: { [key: string]: string }) => {
+    handlerResponse.Data = {
+      'AdminGroupArn': groupArns['AdminGroupArn'],
+      'ReadGroupArn': groupArns['ReadGroupArn']
     }
-  };
+  }
 
   getGroupArns = async (userGroups: QuickSightUserGroup[]) => {
     const groupArns = {

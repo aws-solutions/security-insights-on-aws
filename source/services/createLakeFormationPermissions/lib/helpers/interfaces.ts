@@ -2,12 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { RefreshConfiguration } from '@aws-sdk/client-quicksight';
-import { StatusTypes, DayOfWeek, Interval, RefreshType } from './enum';
-
-export interface CompletionStatus {
-  Status: StatusTypes;
-  Data: Record<string, unknown> | { Error?: { Code: string; Message: string } };
-}
+import { DayOfWeek, Interval, RefreshType } from './enum';
 
 export interface EventDetail {
   name: string;
