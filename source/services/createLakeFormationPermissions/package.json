@@ -28,6 +28,9 @@
     "ts-node": "~10.9.2",
     "typescript": "~5.4.3"
   },
+  "overrides": {
+    "fast-xml-parser": ">=4.4.1"
+  },
   "scripts": {
     "pretest": "npm ci",
     "test": "AWS_REGION=us-east-1 npx jest",

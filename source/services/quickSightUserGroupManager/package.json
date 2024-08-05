@@ -25,6 +25,9 @@
     "aws-sdk-client-mock": "~4.0.0",
     "aws-sdk-client-mock-jest": "~4.0.0"
   },
+  "overrides": {
+    "fast-xml-parser": ">=4.4.1"
+  },
   "scripts": {
     "pretest": "npm ci",
     "test": "npx jest",
