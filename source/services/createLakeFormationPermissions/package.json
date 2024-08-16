@@ -1,6 +1,6 @@
 {
   "name": "security-lake-configuration",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Lambda function to get security lake configuration",
   "main": "./index.js",
   "author": {
