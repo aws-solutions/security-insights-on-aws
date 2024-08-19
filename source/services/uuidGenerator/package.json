@@ -1,6 +1,6 @@
 {
   "name": "security-lake-configuration",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Lambda function to get security lake configuration",
   "main": "./index.js",
   "author": {
@@ -9,9 +9,9 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "uuid": "~9.0.1",
     "@types/aws-lambda": "~8.10.137",
-    "axios": "~1.6.8",
+    "axios": "^1.7.4",
+    "uuid": "~9.0.1",
     "winston": "~3.13.0"
   },
   "devDependencies": {
