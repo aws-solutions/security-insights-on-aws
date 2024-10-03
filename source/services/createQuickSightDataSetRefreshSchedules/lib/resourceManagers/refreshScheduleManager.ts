@@ -23,23 +23,19 @@ export class RefreshScheduleManager {
         data: 'createDataSetRefreshSchedules method invoked',
       },
     });
+    let listOfAllSchedules = this.getListOfAllSchedules(event)
     let awsAccountId = getAwsAccountId(context);
-    let scheduleFrequency = this.getScheduleFrequency(event);
-    let refreshType = this.getRefreshType(event);
-    for (let dataSetId of listOfDataSetIds) {
+    for (let schedule of listOfAllSchedules) {
       logger.debug({
         label: 'CreateLakeFormationPermissions/Handler',
         message: {
-          data: 'Iterating over list of data set ids for creation',
-          refreshTypeValue: refreshType,
-          scheduleFrequencyValue: scheduleFrequency,
-          dataSetIdValue: dataSetId,
+          data: 'Iterating over list of schedule ids for creation',
+          shceduleId: schedule.ScheduleId,
         },
       });
-      let schedule = this.getSchedule(dataSetId, scheduleFrequency, refreshType);
-      await this.refreshScheduleOperations.createRefreshSchedule(dataSetId, awsAccountId, schedule);
-      await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
-    }
+        await this.refreshScheduleOperations.createRefreshSchedule(awsAccountId, schedule);
+        await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
+    } 
   };
 
   private getScheduleFrequency = (event: CloudFormationCustomResourceEvent): ScheduleFrequency => {
@@ -83,7 +79,7 @@ export class RefreshScheduleManager {
   };
 
   private getSchedule = (
-    scheduleId: string,
+    dataSetId: string,
     scheduleFrequency: ScheduleFrequency,
     refreshType: RefreshType,
   ): Schedule => {
@@ -94,9 +90,9 @@ export class RefreshScheduleManager {
       },
     });
     return {
-      ScheduleId: scheduleId,
+      ScheduleId: dataSetId, // schedule id and dataset id have the same values
       ScheduleFrequency: scheduleFrequency,
-      RefreshType: refreshType,
+      RefreshType: refreshType
     };
   };
 
@@ -140,21 +136,46 @@ export class RefreshScheduleManager {
       },
     });
     let awsAccountId = getAwsAccountId(context);
-    let scheduleFrequency = this.getScheduleFrequency(event);
-    let refreshType = this.getRefreshType(event);
-    for (let dataSetId of listOfDataSetIds) {
+    let listOfAllSchedules = this.getListOfAllSchedules(event)
+    
+    for (let schedule of listOfAllSchedules) {
       logger.debug({
         label: 'CreateLakeFormationPermissions/Handler',
         message: {
-          data: 'Iterating over list of data set ids for creation',
-          refreshTypeValue: refreshType,
-          scheduleFrequencyValue: scheduleFrequency,
-          dataSetIdValue: dataSetId,
+          data: 'Iterating over list of schedule ids for creation',
+          dataSetIdValue: schedule.ScheduleId,
         },
       });
-      let schedule = this.getSchedule(dataSetId, scheduleFrequency, refreshType);
-      await this.refreshScheduleOperations.updateRefreshSchedule(dataSetId, awsAccountId, schedule);
+      await this.refreshScheduleOperations.updateRefreshSchedule(awsAccountId, schedule);
       await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
     }
   };
+
+  public upgradeDataSetRefreshSchedules = async (event: CloudFormationCustomResourceEvent, context: Context) => {
+    let listOfAllSchedules = this.getListOfAllSchedules(event)
+    let awsAccountId = getAwsAccountId(context);
+    for (let schedule of listOfAllSchedules) {
+      try {
+        await this.refreshScheduleOperations.createRefreshSchedule(awsAccountId, schedule)
+      } catch (error) {
+        if (error.name === 'ResourceExistsException') {
+          await this.refreshScheduleOperations.updateRefreshSchedule(awsAccountId, schedule)
+        } else {
+        logger.error('Error creating refresh schedule:', error);
+        throw error;
+        }
+      }
+    }
+  }
+
+  private getListOfAllSchedules = (event: CloudFormationCustomResourceEvent): Schedule[] => {
+    let listOfSchedules: Schedule[] = []
+    let scheduleFrequency = this.getScheduleFrequency(event);
+    let refreshType = this.getRefreshType(event);
+    for (let dataSetId of listOfDataSetIds) {
+      let schedule = this.getSchedule(dataSetId, scheduleFrequency, refreshType);
+      listOfSchedules.push(schedule)
+    }
+    return listOfSchedules
+  }
 }

@@ -142,9 +142,11 @@ main() {
   pack_lambda "$source_dir"/services createQuickSightDataSetRefreshSchedules "$build_dist_dir" 
   pack_lambda "$source_dir"/services createLakeFormationPermissions "$build_dist_dir"
   pack_lambda "$source_dir"/services quickSightUserGroupManager  "$build_dist_dir" 
-  pack_lambda "$source_dir"/services sendAthenaMetrics "$build_dist_dir"
+  pack_lambda "$source_dir"/services sendMetrics "$build_dist_dir"
   pack_lambda "$source_dir"/services uuidGenerator "$build_dist_dir"
   pack_lambda "$source_dir"/services setAthenaThresholdValue "$build_dist_dir"
+  pack_lambda "$source_dir"/services createSolutionReleaseNotification "$build_dist_dir"
+  pack_lambda "$source_dir"/services updateSsmParameters "$build_dist_dir"
 
 }
 

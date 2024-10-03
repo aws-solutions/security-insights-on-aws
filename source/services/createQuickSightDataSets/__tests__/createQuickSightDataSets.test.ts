@@ -11,6 +11,7 @@ import {
   CreateDataSetCommand,
   CreateDataSourceCommand,
   DeleteDataSetCommand,
+  DescribeDataSetCommand,
   QuickSightClient,
   UpdateDataSetCommand, 
   } from '@aws-sdk/client-quicksight';
@@ -64,8 +65,8 @@ describe('it should create QuickSight datasets during for CloudFormation create 
     it('it should create QuickSight datasets', async function () {
 
       await handler(createEventCloudFormation as CloudFormationCustomResourceEvent, testContext as Context);
-      
-      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateDataSetCommand, 30);
+
+      expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateDataSetCommand, 7);
       expect(axios.put).toHaveBeenCalledTimes(1);
       expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
     });
@@ -96,7 +97,7 @@ describe('it should delete QuickSight datasets during for CloudFormation delete 
 
     await handler(deleteEventCloudFormation as CloudFormationCustomResourceEvent, testContext as Context);
     
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(DeleteDataSetCommand, 30);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(DeleteDataSetCommand, 7);
     expect(axios.put).toHaveBeenCalledTimes(1);
     expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
   });
@@ -128,19 +129,19 @@ describe('it should update QuickSight datasets during for ssm parameter event', 
   it('it should update security hub QuickSight datasets', async function () {
     mockSsmClient.on(GetParameterCommand).resolves(getParameterCommandResponseForSecurityHub);
     await handler(ssmParameterEventForSecurityHub as  EventBridgeEvent<string, EventDetail>, testContext as Context);  
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateDataSetCommand, 5);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateDataSetCommand, 1);
   });
 
   it('it should update cloudtrail QuickSight datasets', async function () {
     mockSsmClient.on(GetParameterCommand).resolves(getParameterCommandResponseForCloudtrail);
     await handler(ssmParameterEventForCloudtrail as  EventBridgeEvent<string, EventDetail>, testContext as Context);  
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateDataSetCommand, 16);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateDataSetCommand, 1);
   });
 
   it('it should update vpcflowgs QuickSight datasets', async function () {
     mockSsmClient.on(GetParameterCommand).resolves(getParameterCommandResponseForVpcFlowLogs);
     await handler(ssmParameterEventForVpcFlowLogs as  EventBridgeEvent<string, EventDetail>, testContext as Context);  
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateDataSetCommand, 5);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateDataSetCommand, 1);
   });
 
   it('it should update appFabric QuickSight datasets', async function () {
@@ -220,12 +221,22 @@ describe('it should update QuickSight datasets during for CloudFormation update 
       jest.resetAllMocks();
   });
 
+  it('it should update QuickSight datasets', async function () {
+
+    mockQuickSightClient.on(DescribeDataSetCommand).resolves()
+    mockQuickSightClient.on(UpdateDataSetCommand).resolves()
+    await handler(updateEventCloudFormation as CloudFormationCustomResourceEvent, testContext as Context);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(UpdateDataSetCommand, 7);
+    expect(axios.put).toHaveBeenCalledTimes(1);
+    expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
+  });
+
   it('it should create QuickSight datasets', async function () {
 
+    mockQuickSightClient.on(DescribeDataSetCommand).rejects({'name':'ResourceNotFoundException'})
+    mockQuickSightClient.on(CreateDataSetCommand).resolves()
     await handler(updateEventCloudFormation as CloudFormationCustomResourceEvent, testContext as Context);
-    
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(DeleteDataSetCommand, 30);
-    expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateDataSetCommand, 30);
+    expect(mockQuickSightClient).toHaveReceivedCommandTimes(CreateDataSetCommand, 7);
     expect(axios.put).toHaveBeenCalledTimes(1);
     expect(axios.put).toHaveBeenCalledWith(responseUrl, responseBodySuccess, responseConfig);
   });

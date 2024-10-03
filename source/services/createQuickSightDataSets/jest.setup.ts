@@ -21,3 +21,5 @@ process.env.SECURITY_HUB_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-ea
 process.env.CLOUDTRAIL_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-east-1/cloudtrail'
 process.env.VPC_FLOW_LOGS_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-east-1/vpcFlowLogs'
 process.env.APP_FABRIC_SSM_PARAMETER_NAME = '/solutions/securityInsights/us-east-1/appfabric'
+process.env.DELAY_IN_SECONDS_FOR_DATA_SOURCE_CREATION = '0'
+process.env.DELAY_IN_SECONDS_FOR_DATA_SOURCE_UPDATE = '0'
