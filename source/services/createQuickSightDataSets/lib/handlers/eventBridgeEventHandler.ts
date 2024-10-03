@@ -6,14 +6,13 @@ import { QuickSightOperations } from '../serviceOperations/quickSightOperations'
 import { DataSourceConfiguration, EventDetail } from '../helpers/interfaces';
 import { SSMOperations } from '../serviceOperations/ssmOperations';
 import { QuickSightDataSet } from '../resourceManagers/quickSightDataSet';
-import { createDataSetObjects, getAwsAccountId, getDataSourceName, getDataTableAndDatabaseNames } from '../helpers/utils';
+import { createDataSetObjects, getAwsAccountId, getDataSourceName, getDataTableAndDatabaseNames, sendMetrics } from '../helpers/utils';
 import {
   PRINCIPAL_ARN,
   DELAY_IN_SECONDS_FOR_RATE_LIMITING,
 } from '../helpers/constants';
 import { logger } from '../../utils/logger';
 import { createDelayInSeconds } from '../../utils/delay';
-
 export class EventBridgeEventHandler {
   constructor(
     private event: EventBridgeEvent<string, EventDetail>,
@@ -62,6 +61,8 @@ export class EventBridgeEventHandler {
       response.dataTableName,
       dataSourceConfiguration.queryWindowDuration,
     );
+
+    await sendMetrics(dataSourceConfiguration)
   };
 
   private updateDataSets = async (
@@ -97,4 +98,5 @@ export class EventBridgeEventHandler {
       await createDelayInSeconds(Number(DELAY_IN_SECONDS_FOR_RATE_LIMITING)); // Add a delay to rate limit the API and avoid throttling.
     }
   };
+
 }

@@ -26,7 +26,7 @@ export class UpdateEventHandler {
 
     // Check if the solution is upgraded from previous version or only cfn input has changed
     if(this.checkIfSolutionVersionUpgraded(this.event)) {
-      await this.refreshScheduleManager.createDataSetRefreshSchedules(this.event, this.context);
+      await this.refreshScheduleManager.upgradeDataSetRefreshSchedules(this.event, this.context);
     } else {
       await this.refreshScheduleManager.updateDataSetRefreshSchedules(this.event, this.context);
     }

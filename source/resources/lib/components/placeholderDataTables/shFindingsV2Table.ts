@@ -47,6 +47,10 @@ export const glueDataTable = {
           ]),
         },
         {
+          name: 'processed_time_dt',
+          type: Schema.array(Schema.TIMESTAMP),
+        },
+        {
           name: 'profiles',
           type: Schema.array(Schema.STRING),
         },
@@ -61,8 +65,9 @@ export const glueDataTable = {
       type: Schema.BIG_INT,
     },
     {
-      name: 'confidence',
-      type: Schema.INTEGER,
+      name: 'confidence_score',
+      type: Schema.INTEGER
+
     },
     {
       name: 'cloud',
@@ -117,12 +122,47 @@ export const glueDataTable = {
         ]),
     },
     {
+      name: 'resources',
+      type: Schema.array(
+        Schema.struct([
+          {
+            name: 'type',
+            type: Schema.STRING
+          },
+          {
+            name: 'uid',
+            type: Schema.STRING
+          },
+          {
+            name: 'cloud_partition',
+            type: Schema.STRING
+          },
+          {
+            name: 'region',
+            type: Schema.STRING
+          },
+          {
+            name: 'labels',
+            type: Schema.array(Schema.STRING)
+          },
+          {
+            name: 'data',
+            type: Schema.STRING
+          },
+          {
+            name: 'criticality',
+            type: Schema.STRING
+          }
+        ])
+      )
+    },
+    {
       name: 'finding_info',
       //type: "struct<created_time:bigint,uid:string,desc:string,title:string,modified_time:bigint,first_seen_time:bigint,last_seen_time:bigint,related_events:array<struct<product_uid:string,uid:string>>,types:array<string>,remediation:struct<desc:string,kb_articles:array<string>>,src_url:string>"
       type: Schema.struct([
         {
-          name: 'created_time',
-          type: Schema.BIG_INT,
+          name: 'created_time_dt',
+          type: Schema.TIMESTAMP,
         },
         {
           name: 'uid',
@@ -137,16 +177,16 @@ export const glueDataTable = {
           type: Schema.STRING,
         },
         {
-          name: 'modified_time',
-          type: Schema.BIG_INT,
+          name: 'modified_time_dt',
+          type: Schema.TIMESTAMP,
         },
         {
           name: 'first_seen_time_dt',
-          type: Schema.BIG_INT,
+          type: Schema.TIMESTAMP,
         },
         {
-          name: 'last_seen_time',
-          type: Schema.BIG_INT,
+          name: 'last_seen_time_dt',
+          type: Schema.TIMESTAMP,
         },
         {
           name: 'related_events',
@@ -195,15 +235,15 @@ export const glueDataTable = {
           type:Schema.array(Schema.STRING)
         },
         {
+          name: 'control',
+          type: Schema.STRING,
+        },
+        {
           name: 'status',
           type: Schema.STRING,
         },
         {
-          name: 'requirements',
-          type: Schema.array(Schema.STRING),
-        },
-        {
-          name: 'status_detail',
+          name: 'status_code',
           type: Schema.STRING,
         },
       ]),
@@ -434,5 +474,28 @@ export const glueDataTable = {
       name: 'time_dt',
       type: Schema.TIMESTAMP,
     },
+    {
+      name: 'observables',
+      type: Schema.array(
+        Schema.struct([
+          {
+            name: 'name',
+            type: Schema.STRING
+          },
+          {
+            name: 'value',
+            type: Schema.STRING
+          },
+          {
+            name: 'type',
+            type: Schema.STRING
+          },
+          {
+            name: 'type_id',
+            type: Schema.INTEGER
+          }
+        ])
+      )
+    }
   ],
 };

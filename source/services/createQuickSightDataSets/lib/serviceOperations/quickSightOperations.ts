@@ -15,6 +15,7 @@ import {
   CreateDataSourceCommandOutput,
   DeleteDataSourceCommand,
   DeleteDataSourceCommandOutput,
+  DescribeDataSetCommand,
 } from '@aws-sdk/client-quicksight';
 import { QuickSightDataSource } from '../resourceManagers/quickSightDataSource';
 
@@ -183,4 +184,25 @@ export class QuickSightOperations {
       );
     }
   };
+
+  public checkIfQuickSightDataSetExists = async (dataSetId: string, awsAccountId: string): Promise<boolean> => {
+    let dataSetExists: boolean = true
+    try {
+      await this.quickSightClient.send(
+        new DescribeDataSetCommand({
+          DataSetId: dataSetId,
+          AwsAccountId: awsAccountId
+        })
+      );
+    } catch (error) {
+      if (error.name === 'ResourceNotFoundException') {
+        dataSetExists = false
+      } else {
+        throw new Error(
+          `Dataset deletion failed for the data source ${dataSetId} with error ${error}`,
+        );
+      }
+    }
+    return dataSetExists
+  }
 }

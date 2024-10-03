@@ -19,7 +19,6 @@ export class RefreshScheduleOperations {
   }
 
   public createRefreshSchedule = async (
-    dataSetId: string,
     awsAccountId: string,
     schedule: Schedule,
   ): Promise<CreateRefreshScheduleCommandOutput> => {
@@ -31,7 +30,7 @@ export class RefreshScheduleOperations {
     });
     return await this.quickSightClient.send(
       new CreateRefreshScheduleCommand({
-        DataSetId: dataSetId,
+        DataSetId: schedule.ScheduleId, // schedule id and dataset id have the same values
         AwsAccountId: awsAccountId,
         Schedule: schedule,
       }),
@@ -39,7 +38,6 @@ export class RefreshScheduleOperations {
   };
 
   public updateRefreshSchedule = async (
-    dataSetId: string,
     awsAccountId: string,
     schedule: Schedule,
   ): Promise<UpdateRefreshScheduleCommandOutput> => {
@@ -52,7 +50,7 @@ export class RefreshScheduleOperations {
     try {
       return await this.quickSightClient.send(
         new UpdateRefreshScheduleCommand({
-          DataSetId: dataSetId,
+          DataSetId: schedule.ScheduleId,  // schedule id and dataset id have the same values
           AwsAccountId: awsAccountId,
           Schedule: schedule,
         }),
@@ -62,11 +60,11 @@ export class RefreshScheduleOperations {
         label: 'CreateQuickSightDataSetRefreshSchedules/Handler',
         message: {
           data: 'Error when updating schedule refresh settings',
-          value: dataSetId,
+          value: schedule.ScheduleId,
           error: error,
         },
       });
-      throw new Error(`Dataset update failed for the dataset ${dataSetId} with error ${error}`);
+      throw new Error(`Dataset update failed for the dataset ${schedule.ScheduleId} with error ${error}`);
     }
   };
 

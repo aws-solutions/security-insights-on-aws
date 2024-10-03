@@ -31,3 +31,8 @@ export interface DataSetConfiguration {
   dataTableName: string;
   queryWindowDuration: string
 }
+export interface SolutionMetric {
+  Solution: string;
+  UUID: string;
+  Data: { [key: string]: string };
+}

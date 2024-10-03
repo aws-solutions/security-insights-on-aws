@@ -21,6 +21,7 @@ import {
   DEFAULT_DATABASE_NAME,
   DEFAULT_SECURITY_HUB_TABLE_NAME,
   DEFAULT_VPC_TABLE_NAME,
+  METRICS_ENDPOINT,
   QUERY_WINDOW_DURATION,
   RESOURCE_LINK_DATABASE_NAME,
   SECURITY_LAKE_ACCOUNT_ID,
@@ -29,12 +30,14 @@ import {
   SECURITY_LAKE_DATABASE_NAME,
   SECURITY_LAKE_SECURITY_HUB_TABLE_NAME,
   SECURITY_LAKE_VPC_TABLE_NAME,
+  SEND_METRIC,
   SPICE,
   TABLE_ID,
   TEST_DATABASE_NAME,
   TEST_DATATABLE_NAME,
 } from './constants';
-import { DatabaseDetail } from './interfaces';
+import { DatabaseDetail, SolutionMetric } from './interfaces';
+import { Metrics } from './metrics';
 
 export const createDataSetObjects = function (
   principalArn: string,
@@ -230,3 +233,23 @@ export const getDatabaseNameForCurrentAccount = () => {
     return RESOURCE_LINK_DATABASE_NAME;
   }
 };
+
+export const sendMetrics = async (metricsData:any) => {
+  if (metricsEnabled()) {
+    let metricsObj: SolutionMetric = createMetricsResposeObject(metricsData);
+    await Metrics.sendAnonymizedMetric(METRICS_ENDPOINT, metricsObj);
+  }
+}
+
+const metricsEnabled = () => {
+  return SEND_METRIC === 'True';
+}
+
+const createMetricsResposeObject = (metricsData: any) => {
+
+  return {
+    Solution: <string>process.env.SOLUTION_ID,
+    UUID: <string>process.env.UUID,
+    Data: metricsData,
+  };
+}

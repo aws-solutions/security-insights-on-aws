@@ -34,19 +34,19 @@ export const monthlyInterval: RefreshInterval= 'MONTHLY'
 export const refreshType: IngestionType = "FULL_REFRESH"
 export const createDailyRefreshScheduleCommandInput = {
     "AwsAccountId": "111111111111", 
-    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
+    "DataSetId": "Security_Insights_AppFabric_Apps_Failed_Logins", 
     "Schedule": 
     {
         "RefreshType": refreshType, 
         "ScheduleFrequency": {
             "Interval": dailyInterval
-        },  "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+        },  "ScheduleId": "Security_Insights_AppFabric_Apps_Failed_Logins"
     }
 }
 export const dayOfWeek: DayOfWeek = "MONDAY"
 export const createWeeklyRefreshScheduleCommandInput = {
     "AwsAccountId": "111111111111", 
-    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
+    "DataSetId": "Security_Insights_VPC_Flow_Dataset", 
     "Schedule": {
         "RefreshType": refreshType, 
         "ScheduleFrequency": {
@@ -54,12 +54,12 @@ export const createWeeklyRefreshScheduleCommandInput = {
             "RefreshOnDay": {
                 "DayOfWeek": dayOfWeek
             }
-        },  "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+        },  "ScheduleId": "Security_Insights_VPC_Flow_Dataset"
     }
 }
 export const createMonthlyRefreshScheduleCommandInput = {
     "AwsAccountId": "111111111111", 
-    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
+    "DataSetId": "Security_Insights_VPC_Flow_Dataset", 
     "Schedule": 
     {
         "RefreshType": refreshType, 
@@ -68,7 +68,7 @@ export const createMonthlyRefreshScheduleCommandInput = {
             "RefreshOnDay": {
                 "DayOfMonth": "1"
             }
-        },  "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+        },  "ScheduleId": "Security_Insights_VPC_Flow_Dataset"
     }
 }
 export const createEventWithWeeklySchedule = {
@@ -158,8 +158,8 @@ export const deleteEventWithDailySchedule = {
 export const deleteRefreshScheduleCommandInput = 
 {
     "AwsAccountId": "111111111111", 
-    "DataSetId": "Security_Insights_Vpc_Flow_Destination_Inbound", 
-    "ScheduleId": "Security_Insights_Vpc_Flow_Destination_Inbound"
+    "DataSetId": "Security_Insights_VPC_Flow_Dataset", 
+    "ScheduleId": "Security_Insights_VPC_Flow_Dataset"
 }
 
 export const responseUrl = "testURL"

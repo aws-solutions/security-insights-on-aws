@@ -43,6 +43,10 @@ export const glueDataTable = {
           type: Schema.STRING,
         },
         {
+          name: 'event_code',
+          type: Schema.STRING,
+        },
+        {
           name: 'profiles',
           type: Schema.array(Schema.STRING),
         },
@@ -149,8 +153,14 @@ export const glueDataTable = {
               type: Schema.STRING,
             },
             {
-              name: 'account_uid',
-              type: Schema.STRING,
+              name: 'account',
+              type: Schema.struct([
+                {
+                  name: 'uid',
+                  type: Schema.STRING
+                }
+
+              ]),
             },
             {
               name: 'credential_uid',
@@ -324,5 +334,28 @@ export const glueDataTable = {
       name: 'time_dt',
       type: Schema.TIMESTAMP,
     },
+    {
+      name: 'observables',
+      type: Schema.array(
+        Schema.struct([
+          {
+            name: 'name',
+            type: Schema.STRING
+          },
+          {
+            name: 'value',
+            type: Schema.STRING
+          },
+          {
+            name: 'type',
+            type: Schema.STRING
+          },
+          {
+            name: 'type_id',
+            type: Schema.INTEGER
+          }
+        ])
+      )
+    }
   ],
 };

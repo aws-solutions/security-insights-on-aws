@@ -33,8 +33,7 @@ export async function handler(
       return await new CloudFormationEventHandler(
         event as CloudFormationCustomResourceEvent,
         context,
-        quickSightOperations,
-        ssmOperations
+        quickSightOperations
       ).handleEvent();
     } else {
       return await new EventBridgeEventHandler(

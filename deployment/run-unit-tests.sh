@@ -15,7 +15,7 @@ template_dir="$PWD"
 resource_dir="$template_dir/../source/resources"
 source_dir="$template_dir/../source/services"
 
-declare -a lambda_dirs=("createLakeFormationPermissions" "createQuickSightDataSetRefreshSchedules" "quickSightUserGroupManager" "sendAthenaMetrics" "uuidGenerator" "createQuickSightDataSets" "setAthenaThresholdValue")
+declare -a lambda_dirs=("createLakeFormationPermissions" "createQuickSightDataSetRefreshSchedules" "quickSightUserGroupManager" "sendMetrics" "uuidGenerator" "createQuickSightDataSets" "setAthenaThresholdValue" "createSolutionReleaseNotification" "updateSsmParameters")
 
 
 build_binaries(){
@@ -45,7 +45,6 @@ run_unit_tests(){
         echo "------------------------------------------------------------------------------"
 
         cd $source_dir/$lambda_dir
-        npm audit fix
         npm run test
         if [ "$?" = "1" ]; then
             echo "(cd $source_dir/$lambda_dir; npm run test) ERROR: there is likely output above." 1>&2

@@ -81,6 +81,7 @@ export class UUIDResources extends Construct {
       role: uuidGeneratorFunctionLambdaRole.withoutPolicyUpdates(),
       code: Code.fromBucket(deploymentSourceBucket, `${props.solutionName}/${props.solutionVersion}/uuidGenerator.zip`),
       handler: 'index.handler',
+      reservedConcurrentExecutions: 1,
       environment: {
         LOG_LEVEL: props.logLevel,
       },
@@ -127,5 +128,10 @@ export class UUIDResources extends Construct {
     overrideLogicalId(uuidCustomResource, 'UUIDGenerator');
 
     this.uuid = uuidCustomResource.getAtt('UUID').toString();
+
+    addCfnNagSuppression(uuidLogGroup, {
+      id: 'W84',
+      reason: 'CloudWatch log group is always encrypted by default.',
+    });
   }
 }
