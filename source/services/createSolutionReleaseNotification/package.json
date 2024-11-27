@@ -1,6 +1,6 @@
 {
   "name": "security-lake-configuration",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Lambda function to check for the latest solution version available",
   "main": "./index.js",
   "author": {
