@@ -692,11 +692,12 @@ No License Specified
 **********************
 exit
 
-***********************************************
-Other Licenses found in Dependency Tree include
-***********************************************
-"(Apache-2.0)"
-"(BSD-2-Clause)"
-"(Python-2.0)"
-"(0BSD)"
-"(CC-BY-4.0)"
+********************
+OPEN SOURCE LICENSES
+********************
+
+0BSD - http://landley.net/toybox/license.html
+Apache-2.0 - https://www.apache.org/licenses/LICENSE-2.0
+BSD-2-Clause - https://opensource.org/licenses/BSD-2-Clause
+CC-BY-4.0 - https://creativecommons.org/licenses/by/4.0/legalcode
+Python-2.0 - https://opensource.org/licenses/Python-2.0

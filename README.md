@@ -28,7 +28,7 @@ The Security Insights on AWS solution helps analyze the data within your Amazon 
 The default deployment of solution pre-packaged template deploys following infrastructure in your account.
 
 
-![alt Architecture Diagram](architectureDiagram.png)
+![alt Architecture Diagram](./architectureDiagram.png)
 
 The high-level process flow for the solution components deployed with the AWS CloudFormation template is as follows:
 1. **Create permissions** – The solution sets up the permissions needed to visualize the data from your Security Lake. As part of this setup, the solution: (a) Adds the AWS Identity and Access Management (IAM) role for the `CreateLakeFormationPermissions` AWS Lambda function as one of the admins for the Security Lake, and (b) Grants `Describe` and `Select` permissions on the Security Lake database and AWS Lake Formation data tables to the following principals:

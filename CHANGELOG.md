@@ -4,7 +4,13 @@
  The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
- ## [2.0.1] - 2024-11-27
+## [2.0.2] - 2025-03-14
+
+### Security
+
+- Updated axios package to address [CVE-2025-27152](https://avd.aquasec.com/nvd/2025/cve-2025-27152/)
+
+## [2.0.1] - 2024-11-27
 
 ### Changed
 
@@ -19,9 +25,6 @@
  
  ### Removed
   - Old widgets from QuickSight analysis and dashboard for Security Hub, CloudTrail and VPC Flow Logs
-
-## [1.0.3] - 2024-08
- - Upgrade `axios` to mitigate [CVE-2024-39338](https://nvd.nist.gov/vuln/detail/CVE-2024-39338)
 
 ## [1.0.2] - 2024-08
  ### Security

@@ -95,7 +95,7 @@ exports[`Snapshot test for canary alarm 1`] = `
         "SendAnonymizedUsageData": "True",
         "SolutionName": "Security Insights on AWS",
         "UserAgentString": "",
-        "Version": "v2.0.1",
+        "Version": "v2.0.2",
       },
     },
   },
@@ -518,7 +518,7 @@ exports[`Snapshot test for canary alarm 1`] = `
           },
           "Solutions:SolutionID": "SO0228",
           "Solutions:SolutionName": "security-insights-on-aws",
-          "Solutions:SolutionVersion": "v2.0.1",
+          "Solutions:SolutionVersion": "v2.0.2",
         },
       },
       "Type": "AWS::ServiceCatalogAppRegistry::Application",
@@ -1612,7 +1612,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/setAthenaThresholdValue.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/setAthenaThresholdValue.zip",
         },
         "Description": "Lambda function to convert Athena threshold value to bytes",
         "Environment": {
@@ -1858,7 +1858,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/createLakeFormationPermissions.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/createLakeFormationPermissions.zip",
         },
         "Description": "Lambda function to create LakeFormation Permissions",
         "Environment": {
@@ -2356,7 +2356,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/createQuickSightDataSets.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/createQuickSightDataSets.zip",
         },
         "Description": "Lambda function to create data and update data sets for QuickSight",
         "Environment": {
@@ -2818,7 +2818,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/createQuickSightDataSetRefreshSchedules.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/createQuickSightDataSetRefreshSchedules.zip",
         },
         "Description": "Lambda function to create refresh schedule for quicksight datasets",
         "Environment": {
@@ -4082,7 +4082,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/createSolutionReleaseNotification.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/createSolutionReleaseNotification.zip",
         },
         "Description": "Lambda function to create new release notifications",
         "Environment": {
@@ -4105,7 +4105,7 @@ exports[`Snapshot test for canary alarm 1`] = `
                 "Arn",
               ],
             },
-            "CURRENT_RELEASE_TAG": "release/v2.0.1",
+            "CURRENT_RELEASE_TAG": "release/v2.0.2",
             "DELAY_IN_SECONDS_FOR_RATE_LIMITING": "1",
             "LAMBDA_EXECUTION_ROLE_ARN": {
               "Fn::GetAtt": [
@@ -5687,7 +5687,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/quickSightUserGroupManager.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/quickSightUserGroupManager.zip",
         },
         "Description": "Creates default user groups and assigns permissions to view the Security Insights Dashboard and Analyses",
         "Environment": {
@@ -7450,7 +7450,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/sendMetrics.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/sendMetrics.zip",
         },
         "Description": "Lambda function to send athena metrics",
         "Environment": {
@@ -8636,7 +8636,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/uuidGenerator.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/uuidGenerator.zip",
         },
         "Description": "UUID Generator Lambda Function",
         "Environment": {
@@ -9231,7 +9231,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.1/updateSsmParameters.zip",
+          "S3Key": "security-insights-on-aws/v2.0.2/updateSsmParameters.zip",
         },
         "Description": "Lambda function to update SSM Parameters",
         "Environment": {
