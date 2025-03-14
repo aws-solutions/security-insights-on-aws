@@ -69,7 +69,7 @@ export const updateEventCloudFormationNewVersion = {
         "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:CreateQuickSightDataSets",
         "AccountId": "111111111111",
         "Region": "us-east-1",
-        "Version": "2.0.1"
+        "Version": "2.0.2"
     },
     "OldResourceProperties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:111111111111:function:CreateQuickSightDataSets",
