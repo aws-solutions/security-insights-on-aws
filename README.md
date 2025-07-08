@@ -1,4 +1,8 @@
-*[🚀 Solution Landing Page](https://aws.amazon.com/solutions/implementations/security-insights-on-aws/)** | **[🚧 Feature request](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=feature-request%2C+enhancement&template=feature_request.md&title=)** | **[🐛 Bug Report](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=bug%2C+triage&template=bug_report.md&title=)**
+### ⚠️ The [Security Insights on AWS](https://aws.amazon.com/solutions/implementations/security-insights-on-aws?did=sl_card&trk=sl_card) solution will retire in August 2025. Deployments (via CloudFormation or GitHub) will remain operational, but customers will assume responsibility for maintenance and API-related updates after support ends. Customers can explore using [Amazon Security Lake](https://aws.amazon.com/security-lake/) to centralize, normalize, and analyze their security data across AWS, on-premises, and third-party sources.
+
+---
+
+**[🚀 Solution Landing Page](https://aws.amazon.com/solutions/implementations/security-insights-on-aws/)** | **[🚧 Feature request](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=feature-request%2C+enhancement&template=feature_request.md&title=)** | **[🐛 Bug Report](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=bug%2C+triage&template=bug_report.md&title=)**
 
 Note: If you want to use the solution without building from the source, navigate to the Security Insights on AWS solution [landing page](https://aws.amazon.com/solutions/implementations/security-insights-on-aws/) to download the AWS CloudFormation template..
 
