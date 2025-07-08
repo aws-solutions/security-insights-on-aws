@@ -1,4 +1,4 @@
-### ⚠️ The [Security Insights on AWS](https://aws.amazon.com/solutions/implementations/security-insights-on-aws?did=sl_card&trk=sl_card) solution will retire in August 2025. Deployments (via CloudFormation or GitHub) will remain operational, but customers will assume responsibility for maintenance and API-related updates after support ends. Customers can explore using [Amazon Security Lake](https://aws.amazon.com/security-lake/) to centralize, normalize, and analyze their security data across AWS, on-premises, and third-party sources.
+### ⚠️ The [Security Insights on AWS](https://aws.amazon.com/solutions/implementations/security-insights-on-aws) solution will retire in August 2025. Deployments will remain operational, but customers will assume responsibility for maintenance and API-related updates after support ends. Customers can explore using [Amazon Security Lake](https://aws.amazon.com/security-lake/) to centralize, normalize, and analyze their security data across AWS, on-premises, and third-party sources.
 
 ---
 
