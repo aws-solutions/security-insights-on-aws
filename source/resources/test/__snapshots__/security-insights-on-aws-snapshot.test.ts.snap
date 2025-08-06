@@ -87,7 +87,6 @@ exports[`Snapshot test for canary alarm 1`] = `
         "VpcDataSourceName": "vpcFlowLogs",
       },
       "SolutionConfiguration": {
-        "AppRegistryApplicationName": "security-insights",
         "ApplicationType": "AWS-Solutions",
         "GitHubRepoUrl": "https://api.github.com/repos/aws-solutions/security-insights-on-aws/releases/latest",
         "ID": "SO0228",
@@ -95,7 +94,7 @@ exports[`Snapshot test for canary alarm 1`] = `
         "SendAnonymizedUsageData": "True",
         "SolutionName": "Security Insights on AWS",
         "UserAgentString": "",
-        "Version": "v2.0.2",
+        "Version": "v2.0.3",
       },
     },
   },
@@ -491,38 +490,6 @@ exports[`Snapshot test for canary alarm 1`] = `
     },
   },
   "Resources": {
-    "AppRegistry": {
-      "Properties": {
-        "Description": "Service Catalog application to track and manage all your resources for the solution security-insights-on-aws",
-        "Name": {
-          "Fn::Join": [
-            "-",
-            [
-              "security-insights-on-aws",
-              {
-                "Ref": "AWS::Region",
-              },
-              {
-                "Ref": "AWS::AccountId",
-              },
-            ],
-          ],
-        },
-        "Tags": {
-          "Solutions:ApplicationType": {
-            "Fn::FindInMap": [
-              "Solution",
-              "SolutionConfiguration",
-              "ApplicationType",
-            ],
-          },
-          "Solutions:SolutionID": "SO0228",
-          "Solutions:SolutionName": "security-insights-on-aws",
-          "Solutions:SolutionVersion": "v2.0.2",
-        },
-      },
-      "Type": "AWS::ServiceCatalogAppRegistry::Application",
-    },
     "AthenaAlarmForDataScanned2F8599A2": {
       "DependsOn": [
         "AthenaExecutionNotificationsTopicPolicy9AA2156A",
@@ -565,17 +532,6 @@ exports[`Snapshot test for canary alarm 1`] = `
         "Namespace": "AWS/Athena",
         "Period": 86400,
         "Statistic": "Sum",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Threshold": {
           "Fn::GetAtt": [
             "convertAthenaThresholdValueToBytesCustomResource",
@@ -641,17 +597,6 @@ exports[`Snapshot test for canary alarm 1`] = `
             "Arn",
           ],
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "TopicName": {
           "Fn::Join": [
             "",
@@ -816,17 +761,6 @@ exports[`Snapshot test for canary alarm 1`] = `
         },
         "RecursiveDeleteOption": true,
         "State": "ENABLED",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "WorkGroupConfiguration": {
           "EnforceWorkGroupConfiguration": true,
           "PublishCloudWatchMetricsEnabled": true,
@@ -910,17 +844,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
@@ -1042,17 +965,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
@@ -1590,6 +1502,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "ConvertAthenaThresholdValueToBytesRoleEF4061A2",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -1612,7 +1532,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/setAthenaThresholdValue.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/setAthenaThresholdValue.zip",
         },
         "Description": "Lambda function to convert Athena threshold value to bytes",
         "Environment": {
@@ -1659,17 +1579,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -1702,17 +1611,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -1731,17 +1629,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -1836,6 +1723,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "SetupLakeFormationPermissionsRoleB563CC38",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -1858,7 +1753,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/createLakeFormationPermissions.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/createLakeFormationPermissions.zip",
         },
         "Description": "Lambda function to create LakeFormation Permissions",
         "Environment": {
@@ -2199,17 +2094,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -2274,17 +2158,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -2314,17 +2187,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -2334,6 +2196,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "CreateQuickSightDataSetsRoleB4AE7AA1",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -2356,7 +2226,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/createQuickSightDataSets.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/createQuickSightDataSets.zip",
         },
         "Description": "Lambda function to create data and update data sets for QuickSight",
         "Environment": {
@@ -2754,17 +2624,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -2796,6 +2655,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "CreateQuickSightDataSetRefreshSchedulesRoleFB1B08AB",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -2818,7 +2685,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/createQuickSightDataSetRefreshSchedules.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/createQuickSightDataSetRefreshSchedules.zip",
         },
         "Description": "Lambda function to create refresh schedule for quicksight datasets",
         "Environment": {
@@ -3084,17 +2951,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -3127,17 +2983,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -3156,17 +3001,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -3403,17 +3237,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -4012,17 +3835,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -4060,6 +3872,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "CreateSolutionReleaseNotificationRoleA1D8279B",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -4082,30 +3902,18 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/createSolutionReleaseNotification.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/createSolutionReleaseNotification.zip",
         },
         "Description": "Lambda function to create new release notifications",
         "Environment": {
           "Variables": {
-            "APPLICATION_TAG_KEY": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagKey",
-              ],
-            },
-            "APPLICATION_TAG_VALUE": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
             "CREATE_QUICKSIGHT_DATASETS_LAMBDA_FUNCTION_ARN": {
               "Fn::GetAtt": [
                 "CreateQuickDataSets875AE2C0",
                 "Arn",
               ],
             },
-            "CURRENT_RELEASE_TAG": "release/v2.0.2",
+            "CURRENT_RELEASE_TAG": "release/v2.0.3",
             "DELAY_IN_SECONDS_FOR_RATE_LIMITING": "1",
             "LAMBDA_EXECUTION_ROLE_ARN": {
               "Fn::GetAtt": [
@@ -4168,17 +3976,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -4212,17 +4009,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -4241,17 +4027,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -5541,20 +5316,42 @@ exports[`Snapshot test for canary alarm 1`] = `
               },
               "Resource": "*",
             },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com",
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudwatch.amazonaws.com",
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ssm.amazonaws.com",
+              },
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::KMS::Key",
       "UpdateReplacePolicy": "Retain",
@@ -5665,6 +5462,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "QuickSightUserGroupManagerRoleF59C387E",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -5687,7 +5492,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/quickSightUserGroupManager.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/quickSightUserGroupManager.zip",
         },
         "Description": "Creates default user groups and assigns permissions to view the Security Insights Dashboard and Analyses",
         "Environment": {
@@ -5808,17 +5613,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -5852,17 +5646,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -5882,17 +5665,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -7117,17 +6889,6 @@ exports[`Snapshot test for canary alarm 1`] = `
             ],
           },
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::QuickSight::Analysis",
     },
@@ -7390,17 +7151,6 @@ exports[`Snapshot test for canary alarm 1`] = `
             ],
           },
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::QuickSight::Dashboard",
     },
@@ -7428,6 +7178,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "SendMetricsRole4F2200AA",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -7450,7 +7208,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/sendMetrics.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/sendMetrics.zip",
         },
         "Description": "Lambda function to send athena metrics",
         "Environment": {
@@ -7575,17 +7333,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 90,
         "TracingConfig": {
           "Mode": "Active",
@@ -7668,17 +7415,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -7697,17 +7433,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -8451,17 +8176,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -8479,14 +8193,6 @@ exports[`Snapshot test for canary alarm 1`] = `
               "/appfabric",
             ],
           ],
-        },
-        "Tags": {
-          "awsApplication": {
-            "Fn::GetAtt": [
-              "AppRegistry",
-              "ApplicationTagValue",
-            ],
-          },
         },
         "Type": "String",
         "Value": "{"status":"Disabled","queryWindowDuration":"7"}",
@@ -8508,14 +8214,6 @@ exports[`Snapshot test for canary alarm 1`] = `
             ],
           ],
         },
-        "Tags": {
-          "awsApplication": {
-            "Fn::GetAtt": [
-              "AppRegistry",
-              "ApplicationTagValue",
-            ],
-          },
-        },
         "Type": "String",
         "Value": "{"status":"Disabled","queryWindowDuration":"7"}",
       },
@@ -8536,14 +8234,6 @@ exports[`Snapshot test for canary alarm 1`] = `
             ],
           ],
         },
-        "Tags": {
-          "awsApplication": {
-            "Fn::GetAtt": [
-              "AppRegistry",
-              "ApplicationTagValue",
-            ],
-          },
-        },
         "Type": "String",
         "Value": "{"status":"Disabled","queryWindowDuration":"7"}",
       },
@@ -8563,14 +8253,6 @@ exports[`Snapshot test for canary alarm 1`] = `
               "/vpcFlowLogs",
             ],
           ],
-        },
-        "Tags": {
-          "awsApplication": {
-            "Fn::GetAtt": [
-              "AppRegistry",
-              "ApplicationTagValue",
-            ],
-          },
         },
         "Type": "String",
         "Value": "{"status":"Disabled","queryWindowDuration":"7"}",
@@ -8602,6 +8284,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "UUIDGeneratorRole",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -8636,7 +8326,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/uuidGenerator.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/uuidGenerator.zip",
         },
         "Description": "UUID Generator Lambda Function",
         "Environment": {
@@ -8661,17 +8351,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -8774,17 +8453,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -8813,17 +8481,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -8893,17 +8550,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::IAM::Role",
     },
@@ -9209,6 +8855,14 @@ exports[`Snapshot test for canary alarm 1`] = `
         "UpdateSSMParameterPermissionsRoleB7EF2FE5",
       ],
       "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-L1",
+              "reason": "Node.js 20.x is the latest stable LTS version supported by this CDK version",
+            },
+          ],
+        },
         "cfn_nag": {
           "rules_to_suppress": [
             {
@@ -9231,7 +8885,7 @@ exports[`Snapshot test for canary alarm 1`] = `
               ],
             ],
           },
-          "S3Key": "security-insights-on-aws/v2.0.2/updateSsmParameters.zip",
+          "S3Key": "security-insights-on-aws/v2.0.3/updateSsmParameters.zip",
         },
         "Description": "Lambda function to update SSM Parameters",
         "Environment": {
@@ -9330,17 +8984,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "Runtime": "nodejs20.x",
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
         "Timeout": 300,
         "TracingConfig": {
           "Mode": "Active",
@@ -9374,17 +9017,6 @@ exports[`Snapshot test for canary alarm 1`] = `
           ],
         },
         "RetentionInDays": 365,
-        "Tags": [
-          {
-            "Key": "awsApplication",
-            "Value": {
-              "Fn::GetAtt": [
-                "AppRegistry",
-                "ApplicationTagValue",
-              ],
-            },
-          },
-        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
@@ -9504,14 +9136,6 @@ exports[`Snapshot test for canary alarm 1`] = `
               "/updatePermissions",
             ],
           ],
-        },
-        "Tags": {
-          "awsApplication": {
-            "Fn::GetAtt": [
-              "AppRegistry",
-              "ApplicationTagValue",
-            ],
-          },
         },
         "Type": "String",
         "Value": "Version 1",

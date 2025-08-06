@@ -23,6 +23,8 @@
   },
   "overrides": {
     "fast-xml-parser": ">=4.4.1",
-    "path-to-regexp": ">=8.0.0"
+    "path-to-regexp": ">=8.0.0",
+    "brace-expansion": "^4.0.1",
+    "form-data": "^4.0.4"
   }
 }

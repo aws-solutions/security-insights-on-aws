@@ -107,6 +107,12 @@ export class UUIDResources extends Construct {
       id: 'W12',
       reason: 'Resource * is necessary for xray:PutTraceSegments and xray:PutTelemetryRecords.',
     });
+    NagSuppressions.addResourceSuppressions(uuidGeneratorLambdaFunction, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
     overrideLogicalId(uuidGeneratorFunctionLambdaRole, 'UUIDGeneratorRole');
     overrideLogicalId(uuidGeneratorFunctionPolicy, 'UUIDGeneratorPolicy');
 

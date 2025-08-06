@@ -34,6 +34,11 @@ const config: Config = {
     '^.+\\.(t)sx?$': 'ts-jest',
   },
 
+  // Transform ignore patterns to handle ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(brace-expansion|minimatch)/)'
+  ],
+
   // Indicates whether each individual test should be reported during the run
   verbose: true,
 

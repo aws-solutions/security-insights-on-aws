@@ -16,7 +16,7 @@ export const props: SecurityInsightsOnAwStackProps = {
   solutionName: 'security-insights-on-aws',
   solutionProvider: 'AWS Solutions',
   solutionTradeMarkName: 'security-insights-on-aws',
-  solutionVersion: 'v2.0.2'
+  solutionVersion: 'v2.0.3'
 };
 
 /*
