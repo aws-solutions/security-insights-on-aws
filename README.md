@@ -1,8 +1,4 @@
-### ⚠️ The [Security Insights on AWS](https://aws.amazon.com/solutions/implementations/security-insights-on-aws) solution will retire in August 2025. Deployments will remain operational, but customers will assume responsibility for maintenance and API-related updates after support ends. Customers can explore using [Amazon Security Lake](https://aws.amazon.com/security-lake/) to centralize, normalize, and analyze their security data across AWS, on-premises, and third-party sources.
-
----
-
-**[🚀 Solution Landing Page](https://aws.amazon.com/solutions/implementations/security-insights-on-aws/)** | **[🚧 Feature request](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=feature-request%2C+enhancement&template=feature_request.md&title=)** | **[🐛 Bug Report](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=bug%2C+triage&template=bug_report.md&title=)**
+*[🚀 Solution Landing Page](https://aws.amazon.com/solutions/implementations/security-insights-on-aws/)** | **[🚧 Feature request](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=feature-request%2C+enhancement&template=feature_request.md&title=)** | **[🐛 Bug Report](https://github.com/aws-solutions/security-insights-on-aws/issues/new?assignees=&labels=bug%2C+triage&template=bug_report.md&title=)**
 
 Note: If you want to use the solution without building from the source, navigate to the Security Insights on AWS solution [landing page](https://aws.amazon.com/solutions/implementations/security-insights-on-aws/) to download the AWS CloudFormation template..
 
@@ -99,12 +95,12 @@ AWS Solutions use two buckets:
 #### 4. Declare environment variables
 
 ```
-export DIST_OUTPUT_BUCKET=<YOUR_DIST_OUTPUT_BUCKET> # Bucket name for regional code assets
+export CF_TEMPLATE_BUCKET_NAME=<YOUR_CF_TEMPLATE_BUCKET_NAME> # Bucket name for CFN templates
+export DIST_OUTPUT_BUCKET=<YOUR_DIST_OUTPUT_BUCKET> # Bucket name for regional code assets without region suffix {example:'mybucket'}
 export SOLUTION_NAME="security-insights-on-aws" # name of the solution
 export VERSION=<VERSION> # version number for the customized solution
-export CF_TEMPLATE_BUCKET_NAME=<YOUR_CF_TEMPLATE_BUCKET_NAME> # Bucket name for CFN templates
-export QUICKSIGHT_TEMPLATE_ACCOUNT = <YOUR_QUICKSIGHT_TEMPLATE_ACCOUNT> # The AWS account from which the Amazon QuickSight templates should be sourced for Amazon QuickSight Analysis and Dashboard creation
-export DIST_QUICKSIGHT_NAMESPACE = <YOUR_DIST_QUICKSIGHT_NAMESPACE> # The namespace in QuickSight account. Ex. "default"
+export QUICKSIGHT_TEMPLATE_ACCOUNT = <YOUR_QUICKSIGHT_TEMPLATE_ACCOUNT> # The AWS account from which the Amazon QuickSight templates should be sourced for Amazon QuickSight Analysis and Dashboard creation. If your Quicksight account does not have any analysis created, use Account ID provided in landing page template which had analysis created already.
+export DIST_QUICKSIGHT_NAMESPACE = <YOUR_DIST_QUICKSIGHT_NAMESPACE> # The namespace in QuickSight account. Ex. "default". If you are using Account ID provided in landing page template provide 'solutions' as <YOUR_DIST_QUICKSIGHT_NAMESPACE>. 
 ```
 
 #### 5. Build the solution
@@ -112,7 +108,7 @@ export DIST_QUICKSIGHT_NAMESPACE = <YOUR_DIST_QUICKSIGHT_NAMESPACE> # The namesp
 ```
 cd <rootDir>/deployment
 chmod +x build-s3-dist.sh
-./build-s3-dist.sh $DIST_OUTPUT_BUCKET $SOLUTION_NAME $VERSION $CF_TEMPLATE_BUCKET_NAME $QUICKSIGHT_TEMPLATE_ACCOUNT $DIST_QUICKSIGHT_NAMESPACE
+./build-s3-dist.sh $CF_TEMPLATE_BUCKET_NAME $DIST_OUTPUT_BUCKET $SOLUTION_NAME $VERSION $QUICKSIGHT_TEMPLATE_ACCOUNT $DIST_QUICKSIGHT_NAMESPACE
 ```
 
 ## Upload Deployment Assets
@@ -122,7 +118,7 @@ chmod +x build-s3-dist.sh
 - Copy the CloudFormation templates (`.template` files) from the directory `./deployment/
   global-s3-assets` into the global S3 bucket with the name referenced to `$CF_TEMPLATE_BUCKET_NAME`.
 - Copy the Lambda distribution files (`.zip` files) from the directory `./deployment/
-  regional-s3-assets` into the folder/prefix `$SOLUTION_NAME/$VERSION` in the regional S3 bucket with the name referenced to `$DIST_OUTPUT_BUCKET-[REGION]`. `[REGION]` is the specific AWS Region where you’re deploying the solution.
+  regional-s3-assets` into the folder/prefix `$SOLUTION_NAME/$VERSION` in the regional S3 bucket with the name referenced to `$DIST_OUTPUT_BUCKET' is the specific AWS Region where you’re deploying the solution.
 
 ## Custom QuickSight Template
 

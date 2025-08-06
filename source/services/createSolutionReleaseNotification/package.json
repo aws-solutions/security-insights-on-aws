@@ -9,12 +9,12 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "uuid": "~9.0.1",
+    "@aws-sdk/client-ssm": "~3.600.0",
+    "@aws-sdk/client-sts": "~3.600.0",
     "@types/aws-lambda": "~8.10.137",
     "axios": "~1.8.2",
-    "winston": "~3.13.0",
-    "@aws-sdk/client-ssm": "~3.600.0",
-    "@aws-sdk/client-sts": "~3.600.0"
+    "uuid": "~9.0.1",
+    "winston": "~3.13.0"
   },
   "devDependencies": {
     "@types/jest": "~29.5.12",
@@ -29,6 +29,10 @@
   "overrides": {
     "fast-xml-parser": ">=4.4.1",
     "path-to-regexp": ">=8.0.0",
+    "brace-expansion": "^4.0.1",
+    "minimatch": "^10.0.3",
+    "test-exclude": "^7.0.0",
+    "form-data": "^4.0.4",
     "ts-jest": {
       "@babel/core": "7.26.10"
     }

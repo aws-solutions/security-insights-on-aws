@@ -503,7 +503,7 @@ babel-preset-current-node-syntax
 @babel/plugin-syntax-optional-catch-binding
 @babel/plugin-syntax-optional-chaining
 @babel/plugin-syntax-top-level-await
-deepmer ge
+deepmerge
 jest-circus
 @jest/environment
 @jest/fake-timers
@@ -673,6 +673,45 @@ environment
 mimic-function
 @babel/plugin-syntax-top-level-await
 deepmerge
+es-errors
+call-bind-apply-helpers
+es-define-property
+es-object-atoms
+get-proto
+dunder-proto
+math-intrinsics
+fast-uri
+@aws-cdk/cloud-assembly-schema
+@babel/helper-globals
+foreground-child
+jackspeak
+@isaacs/cliui
+eastasianwidth
+@pkgjs/parseargs
+@isaacs/brace-expansion
+@isaacs/balanced-match
+minipass
+package-json-from-dist
+path-scurry
+@babel/plugin-syntax-class-static-block
+@babel/plugin-syntax-import-attributes
+@babel/plugin-syntax-private-property-in-object
+@vitest/expect
+@types/chai
+@types/deep-eql
+@vitest/spy
+tinyspy
+@vitest/utils
+@vitest/pretty-format
+tinyrainbow
+loupe
+chai
+assertion-error
+check-error
+deep-eql
+pathval
+@aws-sdk/xml-builder
+@aws-sdk/nested-clients
 
 **********************
 ISC
@@ -699,5 +738,6 @@ OPEN SOURCE LICENSES
 0BSD - http://landley.net/toybox/license.html
 Apache-2.0 - https://www.apache.org/licenses/LICENSE-2.0
 BSD-2-Clause - https://opensource.org/licenses/BSD-2-Clause
+BlueOak-1.0.0 - https://blueoakcouncil.org/license/1.0.0
 CC-BY-4.0 - https://creativecommons.org/licenses/by/4.0/legalcode
 Python-2.0 - https://opensource.org/licenses/Python-2.0

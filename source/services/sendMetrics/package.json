@@ -29,6 +29,10 @@
   "overrides": {
     "fast-xml-parser": ">=4.4.1",
     "path-to-regexp": ">=8.0.0",
+    "brace-expansion": "^4.0.1",
+    "minimatch": "^10.0.3",
+    "test-exclude": "^7.0.0",
+    "form-data": "^4.0.4",
     "ts-jest": {
       "@babel/core": "7.26.10"
     }

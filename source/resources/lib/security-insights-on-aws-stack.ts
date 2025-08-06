@@ -4,15 +4,13 @@
 import * as cdk from 'aws-cdk-lib';
 import {
   Aws,
-  aws_servicecatalogappregistry as servicecatalogappregistry,
   CfnCondition,
   CfnOutput,
   CfnParameter,
   CustomResource,
   Duration,
-  Fn,
+
   RemovalPolicy,
-  Tags,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { AthenaWorkGroup } from './components/athena-workgroup-construct';
@@ -251,7 +249,6 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
     mappings.setValue('SolutionConfiguration', 'SendAnonymizedUsageData', 'True');
     mappings.setValue('SolutionConfiguration', 'MetricsURL', 'https://metrics.awssolutionsbuilder.com/generic');
     mappings.setValue('SolutionConfiguration', 'SolutionName', 'Security Insights on AWS');
-    mappings.setValue('SolutionConfiguration', 'AppRegistryApplicationName', 'security-insights');
     mappings.setValue('SolutionConfiguration', 'UserAgentString', '');
     mappings.setValue('SolutionConfiguration', 'ApplicationType', 'AWS-Solutions');
     mappings.setValue('SolutionConfiguration', 'GitHubRepoUrl', 'https://api.github.com/repos/aws-solutions/security-insights-on-aws/releases/latest');
@@ -1554,25 +1551,6 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
 
     const {cloudTrailTopic, securityHubTopic} = this.createQForQuicksightTopics(createQuickSightDataSetRefreshSchedulesCustomResource, createQuickSightQTopicsCondition);
 
-    // Application for the solution
-
-    const securityInsightsApplication = new servicecatalogappregistry.CfnApplication(this, 'AppRegistry', {
-      name: Fn.join('-', [props.solutionName, Aws.REGION, Aws.ACCOUNT_ID]),
-      description: `Service Catalog application to track and manage all your resources for the solution ${props.solutionName}`,
-    });
-
-    // Add tags to the Application
-    Tags.of(securityInsightsApplication).add('Solutions:SolutionID', props.solutionId);
-    Tags.of(securityInsightsApplication).add('Solutions:SolutionName', props.solutionName);
-    Tags.of(securityInsightsApplication).add('Solutions:SolutionVersion', props.solutionVersion);
-    Tags.of(securityInsightsApplication).add('Solutions:ApplicationType', mappings.findInMap('SolutionConfiguration', 'ApplicationType'));
-
-    // Add Applications tags to all the resources
-    cdk.Tags.of(this).add('awsApplication', `${securityInsightsApplication.attrApplicationTagValue}`, {
-      excludeResourceTypes: ['AWS::ServiceCatalogAppRegistry::Application'],
-    });
-
-
     /**
      * Lambda function to create new solution version release notifications
      */
@@ -1643,8 +1621,7 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
         SOLUTION_GIT_REPO_URL: mappings.findInMap('SolutionConfiguration', 'GitHubRepoUrl'),
         SNS_TOPIC_ARN: athenaExecutionNotificationsTopic.topicArn,
         CREATE_QUICKSIGHT_DATASETS_LAMBDA_FUNCTION_ARN: createQuickSightDataSets.functionArn,
-        APPLICATION_TAG_KEY: securityInsightsApplication.attrApplicationTagKey,
-        APPLICATION_TAG_VALUE: securityInsightsApplication.attrApplicationTagValue,
+
       },
     });
     setCondition(createSolutionReleaseNotificationFunction, createSolutionReleaseNotificationCondition);
@@ -1900,43 +1877,99 @@ export class SecurityInsightsOnAwsStack extends cdk.Stack {
     });
     addCfnNagSuppression(createQuickSightDataSets, {
       id: 'W89',
-      reason: 'The lambda function does not need access to resources in VPC',
+      reason: 'The lambda function does not need access to resources in VPC'
     });
+
+    NagSuppressions.addResourceSuppressions(createQuickSightDataSets, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
 
     addCfnNagSuppression(createLakeFormationPermissions, {
       id: 'W89',
       reason: 'The lambda function does not need access to resources in VPC',
     });
 
+    NagSuppressions.addResourceSuppressions(createLakeFormationPermissions, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
+
     addCfnNagSuppression(createQuickSightDataSetRefreshSchedules, {
       id: 'W89',
       reason: 'The lambda function does not need access to resources in VPC',
     });
+
+    NagSuppressions.addResourceSuppressions(createQuickSightDataSetRefreshSchedules, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
 
     addCfnNagSuppression(createSolutionReleaseNotificationFunction, {
       id: 'W89',
       reason: 'The lambda function does not need access to resources in VPC',
     });
 
+    NagSuppressions.addResourceSuppressions(createSolutionReleaseNotificationFunction, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
+
     addCfnNagSuppression(quickSightUserGroupManager, {
       id: 'W89',
       reason: 'The lambda function does not need access to resources in VPC',
     });
+
+    NagSuppressions.addResourceSuppressions(quickSightUserGroupManager, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
 
     addCfnNagSuppression(sendMetrics, {
       id: 'W89',
       reason: 'The lambda function does not need access to resources in VPC',
     });
 
+    NagSuppressions.addResourceSuppressions(sendMetrics, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
+
     addCfnNagSuppression(updateSSMParametersFunction, {
       id: 'W89',
       reason: 'The lambda function does not need access to resources in VPC',
     });
 
+    NagSuppressions.addResourceSuppressions(updateSSMParametersFunction, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
+
     addCfnNagSuppression(convertAthenaThresholdValueToBytes, {
       id: 'W89',
       reason: 'The lambda function does not need access to resources in VPC',
     });
+
+    NagSuppressions.addResourceSuppressions(convertAthenaThresholdValueToBytes, [
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Node.js 20.x is the latest stable LTS version supported by this CDK version',
+      },
+    ]);
   }
 
   private createQForQuicksightTopics(
